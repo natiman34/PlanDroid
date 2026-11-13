@@ -1,0 +1,10 @@
+{
+  "name": "Remix PlanDroid - Offline Smart Task Planner \u0026 Notification Scheduler",
+  "description": "An offline-first Android task planner and scheduler that automatically optimizes your daily work schedule and pins real-time interactive plans into your phone notification bar.",
+  "requestFramePermissions": [
+    "notifications"
+  ],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
