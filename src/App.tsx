@@ -37,7 +37,6 @@ import { AnalyticsView } from './components/AnalyticsView';
 import { SettingsView } from './components/SettingsView';
 import { BottomNavBar, type MainSection } from './components/BottomNavBar';
 import { PlanFormModal } from './components/PlanFormModal';
-import { PWAInstallButton } from './components/PWAInstallButton';
 import { FocusTimerModal } from './components/FocusTimerModal';
 import { ScheduleOptimizerModal } from './components/ScheduleOptimizerModal';
 import { FloatingActiveTimer } from './components/FloatingActiveTimer';
@@ -601,16 +600,16 @@ export default function App() {
     <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans selection:bg-blue-600 selection:text-white">
       {/* Clean Top Navigation Bar */}
       <header className="w-full bg-slate-900/95 border-b border-slate-800/80 sticky top-0 z-30 backdrop-blur-md">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 h-15 flex items-center justify-between gap-3">
+        <div className="max-w-4xl mx-auto px-2.5 sm:px-6 h-14 sm:h-15 flex items-center justify-between gap-1.5 sm:gap-3">
           {/* Logo & Title */}
-          <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center text-white font-bold shadow-md shadow-blue-600/20">
-              <Zap className="w-4 h-4 text-white" />
+          <div className="flex items-center gap-1.5 sm:gap-2.5 min-w-0 shrink-0">
+            <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center text-white font-bold shadow-md shadow-blue-600/20 shrink-0">
+              <Zap className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-white" />
             </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <span className="font-bold text-sm sm:text-base text-slate-100 tracking-tight">PlanDroid</span>
-                <span className="text-[10px] font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-2 py-0.5 rounded-full flex items-center gap-1">
+            <div className="min-w-0">
+              <div className="flex items-center gap-1.5 sm:gap-2">
+                <span className="font-bold text-[13px] sm:text-base text-slate-100 tracking-tight whitespace-nowrap">PlanDroid</span>
+                <span className="hidden sm:inline-flex text-[10px] font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-2 py-0.5 rounded-full items-center gap-1 whitespace-nowrap">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
                   {t('offline', lang)}
                 </span>
@@ -619,26 +618,25 @@ export default function App() {
           </div>
 
           {/* Top Quick Actions */}
-          <div className="flex items-center gap-2">
-            <PWAInstallButton lang={lang} variant="header" />
-
+          <div className="flex items-center gap-1 sm:gap-2 shrink-0">
             {/* Streak Counter Badge */}
             <button
               type="button"
               onClick={() => setMainSection('analytics')}
-              className="px-2.5 py-1.5 bg-amber-500/10 hover:bg-amber-500/20 text-amber-400 border border-amber-500/30 rounded-xl text-xs font-bold transition cursor-pointer flex items-center gap-1.5 shadow-sm active:scale-95"
+              className="hidden min-[350px]:flex px-1.5 sm:px-2.5 py-1.5 bg-amber-500/10 hover:bg-amber-500/20 text-amber-400 border border-amber-500/30 rounded-xl text-[11px] sm:text-xs font-bold transition cursor-pointer items-center gap-1 sm:gap-1.5 shadow-sm active:scale-95 shrink-0"
               title={`Productivity Streak: ${streakStats.currentStreak} consecutive days (Best: ${streakStats.longestStreak}d)`}
             >
               <Flame className="w-3.5 h-3.5 fill-amber-400 text-amber-400 animate-pulse" />
-              <span className="font-mono text-xs">{streakStats.currentStreak}d</span>
+              <span className="font-mono text-[11px] sm:text-xs">{streakStats.currentStreak}d</span>
             </button>
 
             {/* Custom Categories & Tags Button */}
             <button
               type="button"
               onClick={() => setIsCategoryManagerOpen(true)}
-              className="p-2 sm:px-2.5 sm:py-1.5 bg-slate-800/80 hover:bg-slate-700/80 text-slate-200 border border-slate-700/80 rounded-xl text-xs font-medium transition cursor-pointer flex items-center gap-1.5 shadow-sm active:scale-95"
+              className="p-1.5 sm:px-2.5 sm:py-1.5 bg-slate-800/80 hover:bg-slate-700/80 text-slate-200 border border-slate-700/80 rounded-xl text-xs font-medium transition cursor-pointer flex items-center gap-1.5 shadow-sm active:scale-95 shrink-0"
               title="Manage Custom Categories & Tags"
+              aria-label="Manage Custom Categories & Tags"
             >
               <Tag className="w-3.5 h-3.5 text-blue-400" />
               <span className="hidden sm:inline">Tags</span>
@@ -648,8 +646,9 @@ export default function App() {
             <button
               type="button"
               onClick={() => setIsAIChatOpen(true)}
-              className="px-2.5 py-1.5 bg-indigo-600/20 hover:bg-indigo-600/30 text-indigo-300 border border-indigo-500/40 rounded-xl text-xs font-semibold transition cursor-pointer flex items-center gap-1.5 shadow-sm active:scale-95"
+              className="p-1.5 sm:px-2.5 sm:py-1.5 bg-indigo-600/20 hover:bg-indigo-600/30 text-indigo-300 border border-indigo-500/40 rounded-xl text-xs font-semibold transition cursor-pointer flex items-center gap-1.5 shadow-sm active:scale-95 shrink-0"
               title="Open PlanDroid AI Productivity Coach"
+              aria-label="Open PlanDroid AI Productivity Coach"
             >
               <Sparkles className="w-3.5 h-3.5 text-indigo-400" />
               <span className="hidden sm:inline">AI Coach</span>
@@ -659,8 +658,9 @@ export default function App() {
               <button
                 type="button"
                 onClick={handleTriggerRebalance}
-                className="p-2 sm:px-3 sm:py-1.5 bg-slate-800/80 hover:bg-slate-700/80 text-slate-200 border border-slate-700/80 rounded-xl text-xs font-medium transition cursor-pointer flex items-center gap-1.5"
+                className="p-1.5 sm:px-3 sm:py-1.5 bg-slate-800/80 hover:bg-slate-700/80 text-slate-200 border border-slate-700/80 rounded-xl text-xs font-medium transition cursor-pointer flex items-center gap-1.5 shrink-0"
                 title="Auto-shift remaining plans forward from current time"
+                aria-label="Rebalance schedule"
               >
                 <RefreshCw className="w-3.5 h-3.5 text-emerald-400" />
                 <span className="hidden sm:inline">{t('rebalance', lang)}</span>
@@ -670,9 +670,9 @@ export default function App() {
             <button
               type="button"
               onClick={() => handleOpenCreate()}
-              className="px-3 py-1.5 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-xs font-semibold shadow-md shadow-blue-600/20 transition active:scale-95 cursor-pointer flex items-center gap-1.5"
+              className="px-2.5 sm:px-3 py-1.5 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-[11px] sm:text-xs font-semibold shadow-md shadow-blue-600/20 transition active:scale-95 cursor-pointer flex items-center gap-1 sm:gap-1.5 whitespace-nowrap shrink-0"
             >
-              <Plus className="w-4 h-4" />
+              <Plus className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />
               <span>{t('createPlan', lang)}</span>
             </button>
           </div>
@@ -751,7 +751,7 @@ export default function App() {
       )}
 
       {/* Main Content Area */}
-      <main className="flex-1 max-w-4xl mx-auto w-full px-4 sm:px-6 py-5 pb-24 space-y-5">
+      <main className="flex-1 max-w-4xl mx-auto w-full px-4 sm:px-6 py-5 pb-[calc(env(safe-area-inset-bottom,0px)+7.5rem)] space-y-5">
         {/* SECTION 1: TODAY'S PLANS (Timeline & Kanban) */}
         {mainSection === 'plans' && (
           <div className="space-y-4 animate-in fade-in duration-150">

@@ -34,9 +34,9 @@ export const BottomNavBar: React.FC<BottomNavBarProps> = ({
   return (
     <nav
       aria-label="Bottom Navigation"
-      className="fixed bottom-0 inset-x-0 z-40 bg-slate-900/95 border-t border-slate-800 backdrop-blur-lg pb-safe"
+      className="fixed bottom-[calc(env(safe-area-inset-bottom,0px)+0.85rem)] inset-x-3 sm:inset-x-auto sm:left-1/2 sm:-translate-x-1/2 sm:w-full sm:max-w-md z-40 rounded-2xl bg-slate-900/95 border border-slate-800/90 backdrop-blur-lg shadow-2xl shadow-black/40"
     >
-      <div className="max-w-md mx-auto px-6 h-16 flex items-center justify-around">
+      <div className="px-2 sm:px-4 h-16 flex items-center justify-between sm:justify-around gap-1 overflow-x-auto scrollbar-none">
         {navItems.map((item) => {
           const Icon = item.icon;
           const isActive = activeSection === item.id;
@@ -45,7 +45,7 @@ export const BottomNavBar: React.FC<BottomNavBarProps> = ({
             <button
               key={item.id}
               onClick={() => handleSelect(item.id)}
-              className={`flex flex-col items-center justify-center py-1 px-4 rounded-xl transition cursor-pointer select-none relative ${
+              className={`shrink-0 min-w-[72px] sm:flex-1 flex flex-col items-center justify-center py-1.5 px-3 rounded-xl transition cursor-pointer select-none relative ${
                 isActive
                   ? 'text-blue-400 font-semibold'
                   : 'text-slate-400 hover:text-slate-200'
@@ -59,7 +59,7 @@ export const BottomNavBar: React.FC<BottomNavBarProps> = ({
                   </span>
                 )}
               </div>
-              <span className="text-[11px] mt-1 tracking-tight">
+              <span className="text-[11px] mt-1 tracking-tight whitespace-nowrap">
                 {t(item.labelKey, lang)}
               </span>
               {isActive && (

@@ -577,7 +577,7 @@ export const FocusTimerModal: React.FC<FocusTimerModalProps> = ({
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-200">
       <div className="w-full max-w-sm rounded-3xl bg-slate-900 border border-slate-800 p-6 shadow-2xl relative text-center max-h-[92vh] overflow-y-auto">
         {/* Top Header Controls: Minimize & Close */}
-        <div className="absolute top-4 right-4 z-20 flex items-center gap-1">
+        <div className="flex items-center justify-end gap-1 -mt-1 mb-2">
           <button
             type="button"
             onClick={() => {
@@ -607,7 +607,7 @@ export const FocusTimerModal: React.FC<FocusTimerModalProps> = ({
         </div>
 
         {/* Mode Selector Chips */}
-        <div className="flex items-center justify-center gap-2 mb-3 pt-2">
+        <div className="flex items-center justify-center gap-2 mb-3">
           <button
             type="button"
             onClick={() => {
@@ -885,7 +885,7 @@ export const FocusTimerModal: React.FC<FocusTimerModalProps> = ({
               </div>
 
               {/* Ambient Sound Loop Options */}
-              <div className="grid grid-cols-3 sm:grid-cols-5 gap-1.5">
+              <div className="flex flex-wrap gap-1.5">
                 {FOCUS_AUDIO_OPTIONS.map((option) => {
                   const isActive = selectedAudioTrack === option.id;
                   return (
@@ -894,7 +894,7 @@ export const FocusTimerModal: React.FC<FocusTimerModalProps> = ({
                       type="button"
                       onClick={() => handleSelectAudioTrack(option.id)}
                       aria-pressed={isActive}
-                      className={`px-2 py-1.5 rounded-xl text-[11px] font-semibold transition cursor-pointer truncate ${
+                      className={`px-2.5 py-1.5 rounded-xl text-[11px] font-semibold transition cursor-pointer whitespace-nowrap ${
                         isActive
                           ? option.id === 'off'
                             ? 'bg-slate-700 text-slate-100 border border-slate-500'

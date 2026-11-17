@@ -92,6 +92,25 @@ export const PlanFormModal: React.FC<PlanFormModalProps> = ({
   const [recurrenceFreq, setRecurrenceFreq] = useState<RecurrenceFrequency>('none');
   const [pinToNotifications, setPinToNotifications] = useState(true);
   const [showAdvanced, setShowAdvanced] = useState(false);
+  const [viewportMaxHeight, setViewportMaxHeight] = useState<number | null>(null);
+
+  // Adapt modal max-height cleanly when mobile virtual keyboard opens via visualViewport
+  useEffect(() => {
+    if (!isOpen) return;
+    const vv = window.visualViewport;
+    if (!vv) return;
+
+    const updateHeight = () => {
+      setViewportMaxHeight(Math.max(260, Math.floor(vv.height - 20)));
+    };
+    updateHeight();
+    vv.addEventListener('resize', updateHeight);
+    vv.addEventListener('scroll', updateHeight);
+    return () => {
+      vv.removeEventListener('resize', updateHeight);
+      vv.removeEventListener('scroll', updateHeight);
+    };
+  }, [isOpen]);
 
   // Populate form if editing existing task or when opened
   useEffect(() => {
@@ -217,10 +236,13 @@ export const PlanFormModal: React.FC<PlanFormModalProps> = ({
   const durationPresets = [15, 30, 45, 60, 90, 120];
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
-      <div className="w-full max-w-lg rounded-2xl bg-slate-900 border border-slate-800 shadow-2xl overflow-hidden flex flex-col max-h-[92vh]">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
+      <div
+        style={viewportMaxHeight ? { maxHeight: `${viewportMaxHeight}px` } : undefined}
+        className="w-full max-w-lg rounded-2xl bg-slate-900 border border-slate-800 shadow-2xl overflow-hidden flex flex-col max-h-[92dvh]"
+      >
         {/* Header */}
-        <div className="flex items-center justify-between px-5 py-4 border-b border-slate-800 bg-slate-900/90 shrink-0">
+        <div className="flex items-center justify-between px-4 sm:px-5 py-3.5 sm:py-4 border-b border-slate-800 bg-slate-900/90 shrink-0">
           <div className="flex items-center gap-2.5">
             <div className="w-8 h-8 rounded-xl bg-blue-600/20 text-blue-400 border border-blue-500/30 flex items-center justify-center">
               {initialTask ? <Calendar className="w-4 h-4 text-blue-400" /> : <Plus className="w-4 h-4 text-blue-400" />}
@@ -245,8 +267,8 @@ export const PlanFormModal: React.FC<PlanFormModalProps> = ({
           </button>
         </div>
 
-        {/* Form Body */}
-        <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto p-5 space-y-4">
+        {/* Form Body (scrollable independently of pinned footer) */}
+        <form id="plan-form-modal-form" onSubmit={handleSubmit} className="flex-1 min-h-0 overflow-y-auto p-4 sm:p-5 space-y-4">
           {/* Plan Title */}
           <div>
             <label className="text-xs font-semibold text-slate-300 block mb-1.5">
@@ -490,24 +512,26 @@ export const PlanFormModal: React.FC<PlanFormModalProps> = ({
             </div>
           )}
 
-          {/* Actions */}
-          <div className="flex items-center justify-end gap-2 pt-3 border-t border-slate-800">
-            <button
-              type="button"
-              onClick={onClose}
-              className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-xs font-medium transition cursor-pointer"
-            >
-              {t('cancel', lang)}
-            </button>
-            <button
-              type="submit"
-              className="px-5 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-xs font-semibold shadow-md shadow-blue-600/20 transition active:scale-95 cursor-pointer flex items-center gap-1.5"
-            >
-              <Check className="w-4 h-4" />
-              <span>{initialTask ? t('saveChanges', lang) : t('createPlan', lang)}</span>
-            </button>
-          </div>
         </form>
+
+        {/* Pinned Actions Footer - Always visible above mobile keyboard */}
+        <div className="shrink-0 flex items-center justify-end gap-2 px-4 sm:px-5 py-3 border-t border-slate-800 bg-slate-900/95">
+          <button
+            type="button"
+            onClick={onClose}
+            className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-xs font-medium transition cursor-pointer"
+          >
+            {t('cancel', lang)}
+          </button>
+          <button
+            type="submit"
+            form="plan-form-modal-form"
+            className="px-5 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-xs font-semibold shadow-md shadow-blue-600/20 transition active:scale-95 cursor-pointer flex items-center gap-1.5 whitespace-nowrap"
+          >
+            <Check className="w-4 h-4 shrink-0" />
+            <span>{initialTask ? t('saveChanges', lang) : t('createPlan', lang)}</span>
+          </button>
+        </div>
       </div>
     </div>
   );

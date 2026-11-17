@@ -28,7 +28,6 @@ import { playAlarmSound, playOneMinuteWarning } from '../utils/audio';
 import { requestNotificationPermission, getNotificationStatus } from '../utils/notifications';
 import { exportAllUserData, importUserData } from '../utils/storage';
 import { t } from '../utils/i18n';
-import { PWAInstallButton } from './PWAInstallButton';
 
 interface SettingsViewProps {
   settings: NotificationSettings;
@@ -166,9 +165,6 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
           </div>
         </div>
       </div>
-
-      {/* PWA Direct Installation Card */}
-      <PWAInstallButton lang={lang} variant="settings" />
 
       {/* Notification status banner if import happened */}
       {importStatusMsg && (

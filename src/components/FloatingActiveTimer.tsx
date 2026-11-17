@@ -37,7 +37,7 @@ export const FloatingActiveTimer: React.FC<FloatingActiveTimerProps> = ({
   return (
     <aside
       aria-label="Active Timer Floating Bar"
-      className="fixed bottom-20 left-4 right-4 sm:left-auto sm:right-6 sm:w-96 z-40 bg-slate-900/95 border border-blue-500/50 rounded-2xl p-3 shadow-2xl backdrop-blur-md animate-in slide-in-from-bottom duration-200"
+      className="fixed bottom-[calc(env(safe-area-inset-bottom,0px)+5.75rem)] left-3 right-3 sm:left-auto sm:right-6 sm:w-96 z-40 bg-slate-900/95 border border-blue-500/50 rounded-2xl p-3 shadow-2xl backdrop-blur-md animate-in slide-in-from-bottom duration-200"
     >
       <div className="flex items-center justify-between gap-3">
         {/* Left: Indicator & Task Info */}
