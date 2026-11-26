@@ -273,12 +273,12 @@ export const GeminiChatModal: React.FC<GeminiChatModalProps> = ({
           {isLoading && (
             <div className="flex gap-2.5 max-w-[88%] mr-auto">
               <div className="w-7 h-7 rounded-lg bg-indigo-950/80 text-indigo-400 border border-indigo-500/30 flex items-center justify-center shrink-0">
-                <Bot className="w-4 h-4 animate-pulse" />
+                <Bot className="w-4 h-4 animatepulse" />
               </div>
               <div className="p-3.5 rounded-2xl bg-slate-950 border border-slate-800 text-xs text-slate-400 rounded-tl-none flex items-center gap-1.5">
-                <span className="w-2 h-2 rounded-full bg-indigo-500 animate-bounce" style={{ animationDelay: '0ms' }} />
-                <span className="w-2 h-2 rounded-full bg-indigo-500 animate-bounce" style={{ animationDelay: '150ms' }} />
-                <span className="w-2 h-2 rounded-full bg-indigo-500 animate-bounce" style={{ animationDelay: '300ms' }} />
+                <span className="w-2 h-2 rounded-full bg-indigo-500 animatebounce" style={{ animationDelay: '0ms' }} />
+                <span className="w-2 h-2 rounded-full bg-indigo-500 animatebounce" style={{ animationDelay: '150ms' }} />
+                <span className="w-2 h-2 rounded-full bg-indigo-500 animatebounce" style={{ animationDelay: '300ms' }} />
                 <span className="ml-1 text-[11px] text-slate-400 font-medium">Strategizing with Gemini...</span>
               </div>
             </div>

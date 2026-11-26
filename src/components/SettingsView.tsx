@@ -216,7 +216,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
       )}
 
       {/* SECTION 1: PLANNING & PRODUCTIVITY PREFERENCES */}
-      <div className="page-section space-y-4">
+      <div className="pagesection space-y-4">
         {sectionHeader(Sliders, t('weeklyPlanningPrefs', lang), t('preferencesDesc', lang))}
 
         {/* App Theme (Dark / Light / System) */}
@@ -398,7 +398,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
       </div>
 
       {/* SECTION 2: LANGUAGE SELECTOR */}
-      <div className="page-section space-y-3">
+      <div className="pagesection space-y-3">
         {sectionHeader(Languages, t('languageSection', lang), t('selectLanguage', lang))}
 
         <div className="grid grid-cols-2 gap-3">
@@ -437,7 +437,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
       </div>
 
       {/* SECTION 3: ALARM & SOUND OPTIONS */}
-      <div className="page-section space-y-4">
+      <div className="pagesection space-y-4">
         {sectionHeader(Volume2, t('alarmSoundSection', lang), t('alarmSoundDesc', lang))}
 
         {/* Master Alarm Toggle */}
@@ -586,7 +586,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
                   className="px-2 py-1 rounded-lg bg-surface-hover border border-border-default text-text-secondary text-[10px] font-medium transition cursor-pointer flex items-center gap-1 active:scale-[0.97]"
                   title={t('testWarning', lang)}
                 >
-                  <Play className={`w-3 h-3 ${isPlayingWarningTest ? 'animate-spin' : ''}`} />
+                  <Play className={`w-3 h-3 ${isPlayingWarningTest ? 'animatespin' : ''}`} />
                   <span>{t('testSound', lang)}</span>
                 </button>
                 <input
@@ -617,7 +617,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
                     className="px-2 py-1 rounded-lg bg-surface-hover border border-border-default text-text-secondary text-[10px] font-medium transition cursor-pointer flex items-center gap-1 active:scale-[0.97]"
                     title={t('testVibration', lang)}
                   >
-                    <Vibrate className={`w-3 h-3 ${isTestingVibration ? 'animate-bounce' : ''}`} />
+                    <Vibrate className={`w-3 h-3 ${isTestingVibration ? 'animatebounce' : ''}`} />
                     <span>{t('testPulse', lang)}</span>
                   </button>
                 )}
@@ -648,7 +648,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
       </div>
 
       {/* SECTION 4: MOBILE & BROWSER NOTIFICATIONS */}
-      <div className="page-section space-y-4">
+      <div className="pagesection space-y-4">
         {sectionHeader(Bell, t('notificationSection', lang), t('notificationSectionDesc', lang))}
 
         <div className="flex items-center justify-between pb-3 border-b border-border-default">
@@ -760,7 +760,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
       </div>
 
       {/* SECTION 5: WORKDAY PREFERENCES */}
-      <div className="page-section space-y-4">
+      <div className="pagesection space-y-4">
         {sectionHeader(Clock, t('workdayPreferences', lang), t('workdayPrefsDesc', lang))}
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
@@ -810,7 +810,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
       </div>
 
       {/* SECTION 6: DATA BACKUP, RESTORE & SYSTEM RESET */}
-      <div className="page-section space-y-4">
+      <div className="pagesection space-y-4">
         {sectionHeader(ShieldCheck, t('backupAndRestore', lang), t('personalPlanDataDesc', lang))}
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">

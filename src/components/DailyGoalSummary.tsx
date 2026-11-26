@@ -297,7 +297,7 @@ export const DailyGoalSummary: React.FC<DailyGoalSummaryProps> = ({
           {isGoalReached && totalTasks > 0 && (
             <button
               onClick={handleCelebrate}
-              className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 text-[10px] font-bold animate-bounce cursor-pointer shadow-sm transition"
+              className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 text-[10px] font-bold animatebounce cursor-pointer shadow-sm transition"
               title="Celebrate goal completion!"
             >
               <Trophy className="w-3 h-3 text-amber-400" />

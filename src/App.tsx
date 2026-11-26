@@ -681,7 +681,7 @@ export default function App() {
 
       {/* Transient Notification Feedback Toast */}
       {notificationBannerMsg && (
-        <div className="sticky top-16 z-30 animatefadein slide-in-from-top-1 duration-200">
+        <div className="sticky top-16 z-30 animatefadein slideinfromtop duration-200">
           <div className="max-w-4xl mx-auto w-full flex items-center justify-between">
             <div className="rounded-lg border border-blue-500/40 bg-blue-600/90 text-white text-xs font-medium px-4 py-2.5 shadow-md flex items-center gap-2">
               <Sparkles className="w-3.5 h-3.5" />
@@ -704,7 +704,7 @@ export default function App() {
           {firedReminders.map((reminder) => (
             <div
               key={reminder.id}
-              className="rounded-xl border border-amber-500/80 bg-surface-panel p-3 shadow-2xl flex items-start gap-2.5 text-xs text-text-primary animatefadein slide-in-from-top-2"
+              className="rounded-xl border border-amber-500/80 bg-surface-panel p-3 shadow-2xl flex items-start gap-2.5 text-xs text-text-primary slideinfromtop"
             >
               <div className="w-8 h-8 rounded-lg bg-amber-500/20 text-amber-400 flex items-center justify-center shrink-0 mt-0.5">
                 <Bell className="w-4 h-4" />

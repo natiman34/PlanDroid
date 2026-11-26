@@ -685,7 +685,7 @@ export const FocusTimerModal: React.FC<FocusTimerModalProps> = ({
         {isCompleted ? (
           <div className="my-3 p-5 rounded-2xl bg-gradient-to-b from-surface-elevated to-emerald-900/30 border border-emerald-800/40 space-y-4 animatezoomin duration-200 shadow-xl">
             <div className="relative w-16 h-16 mx-auto flex items-center justify-center">
-              <span className="absolute inset-0 rounded-full bg-amber-500/20 animate-ping" />
+              <span className="absolute inset-0 rounded-full bg-amber-500/20 animateping" />
               <div className="relative w-14 h-14 rounded-full bg-amber-500/25 border border-amber-500/50 flex items-center justify-center shadow-lg shadow-amber-500/20">
                 <Bell className="w-6 h-6 text-amber-400" />
               </div>

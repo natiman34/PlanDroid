@@ -406,11 +406,11 @@ html.light ::-webkit-scrollbar-thumb {
 }
 
 /* Section container */
-.page-section {
+@utility pagesection {
   @apply rounded-xl border border-border-default bg-surface-panel p-5 shadow-sm;
 }
 
-.page-section-header {
+@utility pagesectionheader {
   @apply flex items-center justify-between mb-5;
 }
 
@@ -530,7 +530,14 @@ html.light ::-webkit-scrollbar-thumb {
 
   .animate-pulse,
   .animate-bounce,
-  .animatefadein {
+  .animatefadein,
+  .animatebounce,
+  .animateping,
+  .animatepulse,
+  .animatespin,
+  .slideinfromtop,
+  .animatezoomin,
+  .animateandroidpulse {
     animation: none !important;
   }
 }
@@ -543,6 +550,51 @@ html.light ::-webkit-scrollbar-thumb {
 
 @utility animateandroidpulse {
   animation: androidPulse 2.5s infinite ease-in-out;
+}
+
+/* Standard animation utilities (Tailwind equivalents) */
+@keyframes bounce {
+  0%, 100% { transform: translateY(-25%); animation-timing-function: cubic-bezier(0.8,0,1,1); }
+  50% { transform: translateY(0); animation-timing-function: cubic-bezier(0,0,0.2,1); }
+}
+
+@utility animatebounce {
+  animation: bounce 1s infinite;
+}
+
+@keyframes ping {
+  75%, 100% { transform: scale(2); opacity: 0; }
+}
+
+@utility animateping {
+  animation: ping 2s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: .5; }
+}
+
+@utility animatepulse {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@utility animatespin {
+  animation: spin 1s linear infinite;
+}
+
+/* Slide-in from top animation */
+@keyframes slideInFromTop {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@utility slideinfromtop {
+  animation: slideInFromTop var(--transition-base) ease-out forwards;
 }
 
 /* Zoom-in animation for modals */

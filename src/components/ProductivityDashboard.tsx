@@ -148,7 +148,7 @@ export const ProductivityDashboard: React.FC<ProductivityDashboardProps> = ({
   return (
     <section
       aria-label="Productivity Stats Dashboard"
-      className="w-full page-section space-y-4"
+      className="w-full pagesection space-y-4"
     >
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-border-default">
