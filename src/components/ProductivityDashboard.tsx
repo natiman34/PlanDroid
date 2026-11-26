@@ -101,28 +101,41 @@ export const ProductivityDashboard: React.FC<ProductivityDashboardProps> = ({
 
   const hasActivity = totalCompletedTasks > 0 || totalCompletedSessions > 0 || totalFocusMinutes > 0;
 
+  const statCard = (title: string, value: string, subtitle: string, Icon: React.FC<{ className?: string }>, colorClass: string) => (
+    <div className="rounded-lg border border-border-default bg-surface-panel p-3 shadow-sm flex flex-col justify-between">
+      <div className="flex items-center justify-between mb-1.5">
+        <span className="text-[9px] font-bold text-text-muted truncate">{title}</span>
+        <Icon className={`w-3.5 h-3.5 shrink-0 ${colorClass}`} />
+      </div>
+      <div className="flex items-baseline gap-1">
+        <span className="text-lg font-bold font-mono text-text-primary">{value}</span>
+        <span className="text-[9px] text-text-muted">{subtitle}</span>
+      </div>
+    </div>
+  );
+
   // Custom accessible Tooltip for Recharts
   const CustomTooltip = ({ active, payload, label }: any) => {
     if (active && payload && payload.length) {
       const dayData = data.find((d) => d.displayDate === label);
       return (
-        <div className="bg-slate-900/95 border border-slate-700/80 p-3 rounded-xl shadow-xl text-xs backdrop-blur-md">
-          <p className="font-bold text-slate-200 mb-1.5 pb-1 border-b border-slate-800">
+        <div className="p-3 rounded-xl border border-border-default bg-surface-panel shadow-xl text-[10px] backdrop-blur-md">
+          <p className="font-bold text-text-primary mb-1.5 pb-1 border-b border-border-default">
             {dayData ? dayData.fullDate : label}
           </p>
           <div className="space-y-1">
             <p className="text-blue-400 flex items-center justify-between gap-3">
               <span>{t('legendTasks', lang)}:</span>
-              <span className="font-mono font-bold text-slate-100">{payload[0]?.value || 0}</span>
+              <span className="font-mono font-bold text-text-primary">{payload[0]?.value || 0}</span>
             </p>
             <p className="text-emerald-400 flex items-center justify-between gap-3">
               <span>{t('legendSessions', lang)}:</span>
-              <span className="font-mono font-bold text-slate-100">{payload[1]?.value || 0}</span>
+              <span className="font-mono font-bold text-text-primary">{payload[1]?.value || 0}</span>
             </p>
             {dayData && dayData.focusMinutes > 0 && (
-              <p className="text-amber-400 flex items-center justify-between gap-3 pt-1 border-t border-slate-800">
+              <p className="text-amber-400 flex items-center justify-between gap-3 pt-1 border-t border-border-default">
                 <span>{t('focusedTimeStat', lang)}:</span>
-                <span className="font-mono font-bold text-slate-100">{formatHoursMinutes(dayData.focusMinutes)}</span>
+                <span className="font-mono font-bold text-text-primary">{formatHoursMinutes(dayData.focusMinutes)}</span>
               </p>
             )}
           </div>
@@ -133,90 +146,66 @@ export const ProductivityDashboard: React.FC<ProductivityDashboardProps> = ({
   };
 
   return (
-    <section 
+    <section
       aria-label="Productivity Stats Dashboard"
-      className="w-full bg-slate-900 border border-slate-800 rounded-2xl p-5 space-y-5 shadow-sm"
+      className="w-full page-section space-y-4"
     >
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 pb-4 border-b border-slate-800">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-blue-600/20 text-blue-400 border border-blue-500/30 flex items-center justify-center shrink-0">
-            <BarChart3 className="w-5 h-5 text-blue-400" />
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-border-default">
+        <div className="flex items-center gap-2">
+          <div className="w-8 h-8 rounded-lg bg-blue-600/20 text-blue-400 border border-blue-500/40 flex items-center justify-center shrink-0">
+            <BarChart3 className="w-4 h-4 text-blue-400" />
           </div>
           <div>
-            <h3 className="text-base font-bold text-slate-100">
+            <h3 className="text-sm font-bold text-text-primary">
               {t('productivityStats', lang)}
             </h3>
-            <p className="text-xs text-slate-400">
-              {t('productivitySubtitle', lang)}
-            </p>
+            <p className="text-[10px] text-text-muted">{t('productivitySubtitle', lang)}</p>
           </div>
         </div>
 
-        <span className="text-[11px] font-medium bg-slate-800/80 text-slate-300 border border-slate-700/60 px-2.5 py-1 rounded-full self-start sm:self-auto">
+        <span className="text-[10px] font-medium text-text-muted uppercase tracking-wider">
           {t('sevenDayOverview', lang)}
         </span>
       </div>
 
       {/* 4 Summary Cards Grid */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-        {/* Card 1: Completed Tasks */}
-        <div className="bg-slate-950/70 border border-slate-800/80 rounded-xl p-3.5 flex flex-col justify-between">
-          <div className="flex items-center justify-between text-slate-400 text-xs mb-1.5">
-            <span className="truncate">{t('completedTasksStat', lang)}</span>
-            <CheckCircle2 className="w-4 h-4 text-blue-400 shrink-0" />
-          </div>
-          <div className="flex items-baseline gap-1.5">
-            <span className="text-2xl font-mono font-extrabold text-blue-400">{totalCompletedTasks}</span>
-            <span className="text-[11px] text-slate-500">{t('tasksUnit', lang)}</span>
-          </div>
-        </div>
-
-        {/* Card 2: Completed Focus Sessions */}
-        <div className="bg-slate-950/70 border border-slate-800/80 rounded-xl p-3.5 flex flex-col justify-between">
-          <div className="flex items-center justify-between text-slate-400 text-xs mb-1.5">
-            <span className="truncate">{t('completedSessionsStat', lang)}</span>
-            <Timer className="w-4 h-4 text-emerald-400 shrink-0" />
-          </div>
-          <div className="flex items-baseline gap-1.5">
-            <span className="text-2xl font-mono font-extrabold text-emerald-400">{totalCompletedSessions}</span>
-            <span className="text-[11px] text-slate-500">{t('sessionsUnit', lang)}</span>
-          </div>
-        </div>
-
-        {/* Card 3: Total Focused Time */}
-        <div className="bg-slate-950/70 border border-slate-800/80 rounded-xl p-3.5 flex flex-col justify-between">
-          <div className="flex items-center justify-between text-slate-400 text-xs mb-1.5">
-            <span className="truncate">{t('focusedTimeStat', lang)}</span>
-            <Clock className="w-4 h-4 text-indigo-400 shrink-0" />
-          </div>
-          <div className="flex items-baseline gap-1.5">
-            <span className="text-2xl font-mono font-extrabold text-indigo-400">{formatHoursMinutes(totalFocusMinutes)}</span>
-          </div>
-        </div>
-
-        {/* Card 4: Daily Average Completion */}
-        <div className="bg-slate-950/70 border border-slate-800/80 rounded-xl p-3.5 flex flex-col justify-between">
-          <div className="flex items-center justify-between text-slate-400 text-xs mb-1.5">
-            <span className="truncate">{t('dailyAverageStat', lang)}</span>
-            <TrendingUp className="w-4 h-4 text-amber-400 shrink-0" />
-          </div>
-          <div className="flex items-baseline gap-1.5">
-            <span className="text-2xl font-mono font-extrabold text-amber-400">{dailyAverageTasks}</span>
-            <span className="text-[11px] text-slate-500">{t('tasksUnit', lang)}/day</span>
-          </div>
-        </div>
+        {statCard(
+          t('completedTasksStat', lang),
+          String(totalCompletedTasks),
+          t('tasksUnit', lang),
+          CheckCircle2,
+          'text-blue-400'
+        )}
+        {statCard(
+          t('completedSessionsStat', lang),
+          String(totalCompletedSessions),
+          t('sessionsUnit', lang),
+          Timer,
+          'text-emerald-400'
+        )}
+        {statCard(
+          t('focusedTimeStat', lang),
+          formatHoursMinutes(totalFocusMinutes),
+          '',
+          Clock,
+          'text-indigo-400'
+        )}
+        {statCard(
+          t('dailyAverageStat', lang),
+          dailyAverageTasks,
+          `${t('tasksUnit', lang)}/day`,
+          TrendingUp,
+          'text-amber-400'
+        )}
       </div>
 
       {/* Recharts Interactive Chart */}
-      <div className="bg-slate-950/60 border border-slate-800/90 rounded-xl p-4">
-        <div className="flex items-center justify-between text-xs mb-3 text-slate-400">
-          <span className="font-semibold text-slate-200">
-            {t('activityComparison', lang)}
-          </span>
-          <span className="text-[10px] text-slate-500">
-            {t('daysWithoutActivity', lang)}
-          </span>
+      <div className="rounded-xl border border-border-default bg-surface-elevated p-4">
+        <div className="flex items-center justify-between text-[9px] mb-3 text-text-muted">
+          <span className="font-semibold text-text-primary">{t('activityComparison', lang)}</span>
+          <span className="text-text-muted">{t('daysWithoutActivity', lang)}</span>
         </div>
 
         <div className="w-full h-64">
@@ -225,37 +214,37 @@ export const ProductivityDashboard: React.FC<ProductivityDashboardProps> = ({
               data={data}
               margin={{ top: 10, right: 10, left: -20, bottom: 5 }}
             >
-              <CartesianGrid strokeDasharray="3 3" stroke="var(--color-slate-700)" opacity={0.4} />
+              <CartesianGrid strokeDasharray="3 3" stroke="currentColor" opacity={0.15} />
               <XAxis
                 dataKey="displayDate"
-                stroke="var(--color-slate-400)"
-                fontSize={11}
+                stroke="currentColor"
+                fontSize={10}
                 tickLine={false}
-                axisLine={{ stroke: 'var(--color-slate-600)' }}
+                axisLine={{ stroke: 'currentColor' }}
               />
               <YAxis
                 allowDecimals={false}
-                stroke="var(--color-slate-400)"
-                fontSize={11}
+                stroke="currentColor"
+                fontSize={10}
                 tickLine={false}
-                axisLine={{ stroke: 'var(--color-slate-600)' }}
+                axisLine={{ stroke: 'currentColor' }}
               />
               <Tooltip content={<CustomTooltip />} />
               <Legend
-                wrapperStyle={{ fontSize: '11px', paddingTop: '10px' }}
+                wrapperStyle={{ fontSize: '10px', paddingTop: '8px' }}
                 iconType="circle"
               />
               <Bar
                 dataKey="completedTasks"
                 name={t('legendTasks', lang)}
-                fill="#3b82f6"
+                fill="#60a5fa"
                 radius={[4, 4, 0, 0]}
                 maxBarSize={32}
               />
               <Bar
                 dataKey="completedSessions"
                 name={t('legendSessions', lang)}
-                fill="#10b981"
+                fill="#34d399"
                 radius={[4, 4, 0, 0]}
                 maxBarSize={32}
               />
@@ -264,8 +253,8 @@ export const ProductivityDashboard: React.FC<ProductivityDashboardProps> = ({
         </div>
 
         {!hasActivity && (
-          <div className="mt-2 text-center text-xs text-slate-500 bg-slate-900/40 p-2.5 rounded-lg border border-slate-800/60 flex items-center justify-center gap-2">
-            <Sparkles className="w-3.5 h-3.5 text-blue-400" />
+          <div className="mt-3 text-center text-[10px] text-text-muted bg-surface-elevated p-2.5 rounded-lg border border-border-default flex items-center justify-center gap-2">
+            <Sparkles className="w-3 h-3 text-blue-400" />
             <span>{t('noActivityRecorded', lang)}</span>
           </div>
         )}

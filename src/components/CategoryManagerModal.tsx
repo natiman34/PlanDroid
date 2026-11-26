@@ -95,7 +95,7 @@ export const CategoryManagerModal: React.FC<CategoryManagerModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-150">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animatefadein duration-150">
       <div className="w-full max-w-lg rounded-2xl bg-slate-900 border border-slate-800 p-5 shadow-2xl space-y-4 max-h-[90vh] flex flex-col">
         {/* Header */}
         <div className="flex items-center justify-between border-b border-slate-800 pb-3 shrink-0">
@@ -270,7 +270,7 @@ export const CategoryManagerModal: React.FC<CategoryManagerModalProps> = ({
 
         {/* Delete Confirmation Alert */}
         {categoryToDelete && (
-          <div className="p-3.5 bg-rose-950/30 border border-rose-900/50 rounded-xl space-y-2 shrink-0 animate-in fade-in">
+          <div className="p-3.5 bg-rose-950/30 border border-rose-900/50 rounded-xl space-y-2 shrink-0 animatefadein">
             <div className="flex items-start gap-2 text-rose-300 text-xs">
               <AlertTriangle className="w-4 h-4 text-rose-400 shrink-0 mt-0.5" />
               <div>

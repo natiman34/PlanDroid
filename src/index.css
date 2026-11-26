@@ -11,13 +11,136 @@
 
 @theme {
   --font-sans: 'Plus Jakarta Sans', 'Noto Sans Ethiopic', 'Abyssinica SIL', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+
+  /* Design system surface colors (for custom utility classes) */
+  --color-surface-panel: var(--surface-panel);
+  --color-surface-base: var(--surface-base);
+  --color-surface-elevated: var(--surface-elevated);
+  --color-surface-hover: var(--surface-hover);
+
+  /* Border colors */
+  --color-border-default: var(--border-default);
+  --color-border-focused: var(--border-focused);
+
+  /* Text colors */
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+  --color-text-muted: var(--text-muted);
+  --color-text-error: var(--text-error, #ef4444);
+
+  /* Border colors */
+  --color-border-subtle: var(--border-subtle);
+  --color-border-success: var(--border-success);
+  --color-border-warning: var(--border-warning);
+  --color-border-error: var(--border-error);
+
+  /* Accent colors */
+  --color-accent-blue: var(--accent-blue);
+  --color-accent-emerald: var(--accent-emerald);
+  --color-accent-amber: var(--accent-amber);
+  --color-accent-rose: var(--accent-rose);
+  --color-accent-indigo: var(--accent-indigo);
+}
+
+/* ===== DESIGN SYSTEM TOKENS ===== */
+
+/* Dark mode (default) */
+html.dark {
+  color-scheme: dark;
+
+  /* Surfaces */
+  --surface-base: #020617;        /* slate-950 */
+  --surface-panel: #0f172a;       /* slate-900 */
+  --surface-elevated: #1e293b;    /* slate-800 */
+  --surface-hover: #334155;       /* slate-700 */
+  --surface-active: #475569;      /* slate-600 */
+
+  /* Borders */
+  --border-subtle: #1e293b;       /* slate-800 */
+  --border-default: #334155;      /* slate-700 */
+  --border-focused: #60a5fa;      /* blue-400 */
+  --border-success: #10b981;      /* emerald-500 */
+  --border-warning: #f59e0b;      /* amber-500 */
+  --border-error: #ef4444;        /* red-500 */
+
+  /* Text */
+  --text-primary: #f8fafc;        /* slate-50 */
+  --text-secondary: #cbd5e1;      /* slate-300 */
+  --text-muted: #94a3b8;          /* slate-500 */
+  --text-error: #ef4444;          /* red-500 */
+  --text-inverse: #0f172a;        /* slate-900 */
+  --text-accent: #60a5fa;         /* blue-400 */
+
+  /* Accents */
+  --accent-blue: #60a5fa;
+  --accent-emerald: #34d399;
+  --accent-amber: #fbbf24;
+  --accent-rose: #fb7185;
+  --accent-indigo: #818cf8;
+}
+
+/* Light mode */
+html.light {
+  color-scheme: light;
+
+  /* Surfaces (inverted light palette) */
+  --surface-base: #f8fafc;        /* slate-50 */
+  --surface-panel: #ffffff;       /* slate-0 */
+  --surface-elevated: #f1f5f9;    /* slate-100 */
+  --surface-hover: #e2e8f0;       /* slate-200 */
+  --surface-active: #cbd5e1;      /* slate-300 */
+
+  /* Borders */
+  --border-subtle: #e2e8f0;       /* slate-200 */
+  --border-default: #cbd5e1;      /* slate-300 */
+  --border-focused: #2563eb;      /* blue-600 */
+  --border-success: #059669;      /* emerald-600 */
+  --border-warning: #d97706;      /* amber-600 */
+  --border-error: #dc2626;        /* red-600 */
+
+  /* Text */
+  --text-primary: #0f172a;        /* slate-900 */
+  --text-secondary: #334155;      /* slate-700 */
+  --text-muted: #64748b;          /* slate-500 */
+  --text-error: #dc2626;          /* red-600 */
+  --text-inverse: #f8fafc;        /* slate-50 */
+  --text-accent: #2563eb;         /* blue-600 */
+
+  /* Accents */
+  --accent-blue: #2563eb;
+  --accent-emerald: #059669;
+  --accent-amber: #d97706;
+  --accent-rose: #dc2626;
+  --accent-indigo: #4f46e5;
+}
+
+/* Custom component tokens exposed via Tailwind arbitrary values */
+@theme {
+  /* Radii */
+  --radius-sm: 0.5rem;    /* 8px */
+  --radius-md: 0.75rem;   /* 12px */
+  --radius-lg: 1rem;      /* 16px */
+  --radius-xl: 1.5rem;    /* 24px */
+  --radius-full: 9999px;
+
+  /* Shadows */
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+  --shadow-glow-blue: 0 0 20px rgb(96 165 250 / 0.25);
+  --shadow-glow-emerald: 0 0 20px rgb(52 211 153 / 0.25);
+
+  /* Transitions */
+  --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-base: 200ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-spring: 300ms cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 html.dark {
   color-scheme: dark;
 }
 
-/* Complete Light Mode palette override for Tailwind v4 utility tokens */
 html.light {
   color-scheme: light;
 
@@ -86,7 +209,30 @@ code, kbd, samp, pre {
   font-family: 'JetBrains Mono', monospace;
 }
 
-/* Custom scrollbars for timeline and lists */
+/* ===== BASE RESET & UTILITIES ===== */
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Focus-visible for accessibility */
+*:focus-visible {
+  outline: 2px solid var(--border-focused, #60a5fa);
+  outline-offset: 2px;
+}
+
+/* Custom scrollbars */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
@@ -105,6 +251,10 @@ html.light ::-webkit-scrollbar-thumb {
   background: rgba(100, 116, 139, 0.35);
 }
 
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(148, 163, 184, 0.45);
+}
+
 .scrollbar-none {
   -ms-overflow-style: none;
   scrollbar-width: none;
@@ -118,8 +268,271 @@ html.light ::-webkit-scrollbar-thumb {
   padding-bottom: env(safe-area-inset-bottom, 0px);
 }
 
-::-webkit-scrollbar-thumb:hover {
-  background: rgba(148, 163, 184, 0.45);
+/* ===== SHARED COMPONENT CLASSES ===== */
+
+/* Card base - consistent panel styling */
+@utility card {
+  @apply rounded-xl border border-border-default bg-surface-panel/95 backdrop-blur-sm shadow-sm transition-all duration-200;
+}
+
+/* Card hover variant */
+@utility cardhover {
+  @apply hover:border-border-focused hover:shadow-lg hover:shadow-blue-500/10 transition-all duration-200;
+}
+
+/* Surface panel (elevated card) */
+@utility panel {
+  @apply rounded-xl border border-border-default bg-surface-elevated/80 backdrop-blur-md shadow-sm transition-all duration-200;
+}
+
+/* Section header with icon + label */
+@utility sectionheader {
+  @apply flex items-center gap-2 mb-3;
+}
+
+@utility sectionlabel {
+  @apply text-[10px] font-bold uppercase tracking-wider text-text-muted mb-1 block;
+}
+
+@utility sectiontitle {
+  @apply text-sm font-bold text-text-primary;
+}
+
+/* Button base styles */
+@utility btnbase {
+  @apply inline-flex items-center justify-center gap-2 rounded-lg font-medium transition-all duration-200 active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none;
+}
+
+@utility btnprimary {
+  @apply btnbase bg-blue-600 text-white hover:bg-blue-500 shadow-md shadow-blue-500/20 focus-visible:ring-blue-500/30 border border-transparent;
+}
+
+@utility btnsecondary {
+  @apply btnbase bg-surface-elevated text-text-primary hover:bg-surface-hover border border-border-default focus-visible:ring-border-focused;
+}
+
+@utility btnoutline {
+  @apply btnbase border border-border-default text-text-secondary hover:bg-surface-hover hover:text-text-primary focus-visible:ring-border-focused;
+}
+
+@utility btnghost {
+  @apply btnbase text-text-muted hover:bg-surface-hover hover:text-text-primary focus-visible:ring-transparent;
+}
+
+@utility btnsuccess {
+  @apply btnbase bg-emerald-600 text-white hover:bg-emerald-500 shadow-md shadow-emerald-500/20 focus-visible:ring-emerald-500/30 border border-transparent;
+}
+
+@utility btnwarning {
+  @apply btnbase bg-amber-600 text-white hover:bg-amber-500 shadow-md shadow-amber-500/20 focus-visible:ring-amber-500/30 border border-transparent;
+}
+
+@utility btndanger {
+  @apply btnbase bg-rose-600 text-white hover:bg-rose-500 shadow-md shadow-rose-500/20 focus-visible:ring-rose-500/30 border border-transparent;
+}
+
+@utility btnsm {
+  @apply px-3 py-1.5 text-xs;
+}
+
+@utility btnmd {
+  @apply px-4 py-2 text-sm;
+}
+
+@utility btnlg {
+  @apply px-6 py-3 text-base;
+}
+
+@utility btnicon {
+  @apply btnbase p-2.5 size-9;
+}
+
+/* Form field base */
+@utility fieldlabel {
+  @apply block text-xs font-semibold text-text-secondary mb-1.5;
+}
+
+@utility fieldinput {
+  @apply w-full rounded-lg border border-border-default bg-surface-base px-3 py-2 text-text-primary text-sm placeholder-text-muted focus:border-border-focused focus:ring-1 focus:ring-border-focused focus:outline-none transition-all duration-200 disabled:bg-surface-elevated disabled:opacity-50;
+}
+
+@utility fieldtextarea {
+  @apply fieldinput min-h-[80px] resize-none;
+}
+
+@utility fieldselect {
+  @apply fieldinput cursor-pointer appearance-none bg-[url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23cbd5e1%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4l128-127.9c3.6-3.6%205.4-7.8%205.4-12.8%200-5-1.8-9.3-5.4-12.9z%22%2F%3E%3C%2Fsvg%3E')] bg-no-repeat bg-[right_2.5px_center] bg-[length:1.5em] pr-10;
+}
+
+@utility fieldhelper {
+  @apply mt-1 text-[10px] text-text-muted;
+}
+
+@utility fielderror {
+  @apply mt-1 text-[10px] font-medium text-text-error;
+}
+
+/* Badge */
+@utility badge {
+  @apply inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-bold whitespace-nowrap;
+}
+
+@utility badgesuccess { @apply badge bg-emerald-500/20 text-emerald-400 border border-emerald-500/40; }
+@utility badgewarning { @apply badge bg-amber-500/20 text-amber-400 border border-amber-500/40; }
+@utility badgeerror { @apply badge bg-rose-500/20 text-rose-400 border border-rose-500/40; }
+@utility badgeinfo { @apply badge bg-blue-500/20 text-blue-400 border border-blue-500/40; }
+@utility badgeneutral { @apply badge bg-surface-hover text-text-secondary border border-border-default; }
+
+/* Stat card */
+@utility statcard {
+  @apply rounded-xl border border-border-default bg-surface-panel p-4 shadow-sm transition-all duration-200 hover:border-border-focused;
+}
+
+/* Empty state */
+@utility emptystate {
+  @apply flex flex-col items-center justify-center py-12 text-center rounded-xl border-2 border-dashed border-border-default bg-surface-elevated/50;
+}
+
+@utility emptystateicon {
+  @apply w-12 h-12 rounded-lg bg-surface-hover flex items-center justify-center mb-3 text-text-muted;
+}
+
+@utility emptystatetitle {
+  @apply text-sm font-bold text-text-primary mb-1;
+}
+
+@utility emptystatedesc {
+  @apply text-xs text-text-muted max-w-xs leading-relaxed;
+}
+
+/* Section container */
+.page-section {
+  @apply rounded-xl border border-border-default bg-surface-panel p-5 shadow-sm;
+}
+
+.page-section-header {
+  @apply flex items-center justify-between mb-5;
+}
+
+/* Toast / banner */
+@utility toast {
+  @apply fixed top-4 right-4 z-50 rounded-xl border border-border-default bg-surface-panel px-4 py-3 shadow-xl animateslidein animatefadein;
+}
+
+/* Modal overlay */
+@utility modaloverlay {
+  @apply fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-black/60 backdrop-blur-sm animatefadein duration-200;
+}
+
+@utility modalcontent {
+  @apply rounded-2xl border border-border-default bg-surface-panel shadow-xl animatezoomin duration-200 max-h-[90vh] overflow-y-auto outline-none;
+}
+
+@utility modalheader {
+  @apply flex items-center justify-between px-6 py-4 border-b border-border-default;
+}
+
+@utility modaltitle {
+  @apply text-base font-bold text-text-primary;
+}
+
+@utility modalclose {
+  @apply btnicon btnghost size-8 text-text-muted hover:text-text-primary hover:bg-surface-hover;
+}
+
+@utility modalbody {
+  @apply px-6 py-5;
+}
+
+@utility modalfooter {
+  @apply px-6 py-4 border-t border-border-default flex flex-col sm:flex-row sm:justify-end gap-3;
+}
+
+/* Divider */
+.divider {
+  @apply h-[1px] w-full border-t border-border-subtle my-4;
+}
+
+/* Progress bar base */
+@utility progresstrack {
+  @apply w-full h-2 rounded-full bg-surface-hover border border-border-default overflow-hidden;
+}
+
+@utility progressfill {
+  @apply h-full rounded-full transition-all duration-500 ease-out;
+}
+
+/* Toggle switch */
+@utility toggleswitch {
+  @apply relative inline-flex items-center cursor-pointer size-6 select-none touch-none;
+}
+
+.toggleswitch input {
+  @apply opacity-0 w-0 h-0 absolute;
+}
+
+@utility toggletrack {
+  @apply inline-block size-6 rounded-full bg-border-default transition-colors duration-200;
+}
+
+@utility togglecthumb {
+  @apply absolute left-0 top-1 size-4 rounded-full bg-white transition-transform duration-200 shadow-sm;
+}
+
+.toggleswitch input:checked ~ .togglecthumb {
+  @apply translate-x-2 bg-blue-500;
+}
+
+.toggleswitch input:checked ~ .toggletrack {
+  @apply bg-blue-500;
+}
+
+/* ===== ANIMATIONS ===== */
+
+@keyframes slideIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@utility animateslidein {
+  animation: slideIn var(--transition-base) ease-out forwards;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@utility animatefadein {
+  animation: fadeIn var(--transition-fast) ease-out forwards;
+}
+
+/* Page transition */
+@utility pageenter {
+  opacity: 0;
+  transform: translateY(10px);
+}
+
+@utility pageenteractive {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity var(--transition-base), transform var(--transition-base);
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .animate-pulse,
+  .animate-bounce,
+  .animatefadein {
+    animation: none !important;
+  }
 }
 
 /* Android subtle pulse and notification animations */
@@ -128,6 +541,26 @@ html.light ::-webkit-scrollbar-thumb {
   50% { opacity: 0.85; transform: scale(0.98); }
 }
 
-.animate-android-pulse {
+@utility animateandroidpulse {
   animation: androidPulse 2.5s infinite ease-in-out;
+}
+
+/* Zoom-in animation for modals */
+@keyframes zoomIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@utility animatezoomin {
+  animation: zoomIn var(--transition-base) ease-out forwards;
+}
+
+/* Slide-in from bottom animation */
+@keyframes slideInFromBottom {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@utility slidedownin {
+  animation: slideInFromBottom var(--transition-base) ease-out forwards;
 }

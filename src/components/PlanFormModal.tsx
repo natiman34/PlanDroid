@@ -13,6 +13,8 @@ import {
   AlertTriangle,
   ChevronDown,
   ChevronUp,
+  Minus,
+  Layers,
 } from 'lucide-react';
 import { t } from '../utils/i18n';
 import {
@@ -36,7 +38,7 @@ interface PlanFormModalProps {
   onClose: () => void;
   onSave: (planData: Partial<Task>, pinImmediately?: boolean) => void;
   initialTask?: Task | null;
-  initialDate?: string; // Preselect date when adding from a specific day in weekly view
+  initialDate?: string;
   prefillData?: Partial<Task> | null;
   existingTasks?: Task[];
   defaultDuration?: number;
@@ -94,7 +96,6 @@ export const PlanFormModal: React.FC<PlanFormModalProps> = ({
   const [showAdvanced, setShowAdvanced] = useState(false);
   const [viewportMaxHeight, setViewportMaxHeight] = useState<number | null>(null);
 
-  // Adapt modal max-height cleanly when mobile virtual keyboard opens via visualViewport
   useEffect(() => {
     if (!isOpen) return;
     const vv = window.visualViewport;
@@ -112,7 +113,6 @@ export const PlanFormModal: React.FC<PlanFormModalProps> = ({
     };
   }, [isOpen]);
 
-  // Populate form if editing existing task or when opened
   useEffect(() => {
     if (initialTask) {
       setTitle(initialTask.title || '');
@@ -138,7 +138,6 @@ export const PlanFormModal: React.FC<PlanFormModalProps> = ({
       setPinToNotifications(false);
       setShowAdvanced(Boolean(initialTask.recurrence?.frequency && initialTask.recurrence.frequency !== 'none'));
     } else {
-      // Default clean values or prefill values for new plan
       const targetDuration = prefillData?.durationMinutes || defaultDuration;
       setTitle(prefillData?.title || '');
       setDescription(prefillData?.description || '');
@@ -172,7 +171,6 @@ export const PlanFormModal: React.FC<PlanFormModalProps> = ({
 
   if (!isOpen) return null;
 
-  // Handle start time change -> update end time keeping current duration
   const handleStartTimeChange = (newStart: string) => {
     setStartTime(newStart);
     if (newStart && durationMinutes > 0) {
@@ -180,7 +178,6 @@ export const PlanFormModal: React.FC<PlanFormModalProps> = ({
     }
   };
 
-  // Handle end time change -> calculate duration
   const handleEndTimeChange = (newEnd: string) => {
     setEndTime(newEnd);
     if (startTime && newEnd) {
@@ -189,7 +186,6 @@ export const PlanFormModal: React.FC<PlanFormModalProps> = ({
     }
   };
 
-  // Handle duration chip click -> adjust end time
   const handleDurationSelect = (mins: number) => {
     setDurationMinutes(mins);
     if (startTime) {
@@ -197,7 +193,6 @@ export const PlanFormModal: React.FC<PlanFormModalProps> = ({
     }
   };
 
-  // Conflict detection on the chosen date
   const conflictingTasks = existingTasks.filter(t => {
     if (initialTask && t.id === initialTask.id) return false;
     if (t.date !== date) return false;
@@ -236,22 +231,22 @@ export const PlanFormModal: React.FC<PlanFormModalProps> = ({
   const durationPresets = [15, 30, 45, 60, 90, 120];
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/60 backdrop-blur-sm animatefadein duration-200">
       <div
         style={viewportMaxHeight ? { maxHeight: `${viewportMaxHeight}px` } : undefined}
-        className="w-full max-w-lg rounded-2xl bg-slate-900 border border-slate-800 shadow-2xl overflow-hidden flex flex-col max-h-[92dvh]"
+        className="w-full max-w-lg rounded-2xl border border-border-default bg-surface-panel shadow-xl overflow-hidden flex flex-col max-h-[92dvh]"
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-4 sm:px-5 py-3.5 sm:py-4 border-b border-slate-800 bg-slate-900/90 shrink-0">
+        <div className="flex items-center justify-between px-4 sm:px-5 py-3.5 sm:py-4 border-b border-border-default bg-surface-panel shrink-0">
           <div className="flex items-center gap-2.5">
             <div className="w-8 h-8 rounded-xl bg-blue-600/20 text-blue-400 border border-blue-500/30 flex items-center justify-center">
               {initialTask ? <Calendar className="w-4 h-4 text-blue-400" /> : <Plus className="w-4 h-4 text-blue-400" />}
             </div>
             <div>
-              <h3 className="text-sm font-bold text-slate-100">
+              <h3 className="text-sm font-bold text-text-primary">
                 {initialTask ? t('editPlanTitle', lang) : t('newPlanTitle', lang)}
               </h3>
-              <p className="text-xs text-slate-400">
+              <p className="text-[10px] text-text-muted">
                 {formatReadableDate(date, { includeYear: true })}
               </p>
             </div>
@@ -261,18 +256,18 @@ export const PlanFormModal: React.FC<PlanFormModalProps> = ({
             type="button"
             onClick={onClose}
             aria-label={t('cancel', lang)}
-            className="p-1.5 rounded-lg text-slate-400 hover:text-slate-200 hover:bg-slate-800 transition cursor-pointer"
+            className="btnicon btnghost size-8 text-text-muted hover:text-text-primary hover:bg-surface-hover"
           >
-            <X className="w-5 h-5" />
+            <X className="w-4 h-4" />
           </button>
         </div>
 
-        {/* Form Body (scrollable independently of pinned footer) */}
+        {/* Form Body */}
         <form id="plan-form-modal-form" onSubmit={handleSubmit} className="flex-1 min-h-0 overflow-y-auto p-4 sm:p-5 space-y-4">
           {/* Plan Title */}
           <div>
-            <label className="text-xs font-semibold text-slate-300 block mb-1.5">
-              {t('planTitlePlaceholder', lang)} *
+            <label className="fieldlabel">
+              {t('planTitlePlaceholder', lang)} <span className="text-text-muted">*</span>
             </label>
             <input
               type="text"
@@ -281,31 +276,31 @@ export const PlanFormModal: React.FC<PlanFormModalProps> = ({
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               placeholder="e.g. Sprint Architecture Review or Daily Workout"
-              className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-blue-500 transition"
+              className="fieldinput"
             />
           </div>
 
-          {/* Date & Category in 2 columns */}
+          {/* Date & Category */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <label className="text-xs font-semibold text-slate-300 block mb-1.5 flex items-center gap-1.5">
+              <label className="fieldlabel flex items-center gap-1.5">
                 <Calendar className="w-3.5 h-3.5 text-blue-400" />
-                <span>Scheduled Date</span>
+                {t('scheduledDate', lang)}
               </label>
               <input
                 type="date"
                 required
                 value={date}
                 onChange={(e) => setDate(e.target.value)}
-                className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-blue-500 font-mono"
+                className="fieldinput text-xs font-mono"
               />
             </div>
 
             <div>
               <div className="flex items-center justify-between mb-1.5">
-                <label className="text-xs font-semibold text-slate-300 flex items-center gap-1.5">
+                <label className="fieldlabel flex items-center gap-1.5">
                   <Tag className="w-3.5 h-3.5 text-blue-400" />
-                  <span>Category Tag</span>
+                  {t('categoryTag', lang)}
                 </label>
                 {onOpenCategoryManager && (
                   <button
@@ -327,7 +322,7 @@ export const PlanFormModal: React.FC<PlanFormModalProps> = ({
                   else if (val === 'cat-projects') setCategory('admin');
                   else setCategory('deep_work');
                 }}
-                className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-blue-500 cursor-pointer"
+                className="fieldselect"
               >
                 {categories.map((c) => (
                   <option key={c.id} value={c.id}>
@@ -339,12 +334,12 @@ export const PlanFormModal: React.FC<PlanFormModalProps> = ({
             </div>
           </div>
 
-          {/* Time & Duration Controls */}
-          <div className="p-3.5 bg-slate-950/60 rounded-xl border border-slate-800 space-y-3">
-            <div className="flex items-center justify-between text-xs text-slate-300">
-              <span className="font-semibold flex items-center gap-1.5">
+          {/* Time & Duration */}
+          <div className="p-3 rounded-lg border border-border-default bg-surface-elevated/50 space-y-3">
+            <div className="flex items-center justify-between text-[10px] font-semibold text-text-muted">
+              <span className="flex items-center gap-1.5">
                 <Clock className="w-3.5 h-3.5 text-blue-400" />
-                <span>Time & Duration</span>
+                <span>{t('timeDuration', lang)}</span>
               </span>
               <span className="font-mono text-blue-400 font-bold bg-blue-500/10 px-2 py-0.5 rounded border border-blue-500/20">
                 {durationMinutes} min
@@ -353,32 +348,31 @@ export const PlanFormModal: React.FC<PlanFormModalProps> = ({
 
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="text-[11px] text-slate-400 block mb-1">Start Time</label>
+                <label className="text-[10px] text-text-muted block mb-1">{t('startTime', lang)}</label>
                 <input
                   type="time"
                   required
                   value={startTime}
                   onChange={(e) => handleStartTimeChange(e.target.value)}
-                  className="w-full bg-slate-900 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-slate-200 font-mono focus:outline-none focus:border-blue-500"
+                  className="fieldinput text-xs font-mono"
                 />
               </div>
 
               <div>
-                <label className="text-[11px] text-slate-400 block mb-1">End Time</label>
+                <label className="text-[10px] text-text-muted block mb-1">{t('endTime', lang)}</label>
                 <input
                   type="time"
                   required
                   value={endTime}
                   onChange={(e) => handleEndTimeChange(e.target.value)}
-                  className="w-full bg-slate-900 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-slate-200 font-mono focus:outline-none focus:border-blue-500"
+                  className="fieldinput text-xs font-mono"
                 />
               </div>
             </div>
 
-            {/* Quick Duration Preset Chips */}
             <div>
-              <span className="text-[10px] text-slate-500 uppercase tracking-wider block mb-1">
-                Quick Duration Presets:
+              <span className="text-[10px] text-text-muted uppercase tracking-wider block mb-1.5">
+                {t('quickDurationPresets', lang)}
               </span>
               <div className="flex flex-wrap gap-1.5">
                 {durationPresets.map((dur) => (
@@ -388,8 +382,8 @@ export const PlanFormModal: React.FC<PlanFormModalProps> = ({
                     onClick={() => handleDurationSelect(dur)}
                     className={`py-1 px-2.5 rounded-lg text-xs font-mono font-medium transition cursor-pointer border ${
                       durationMinutes === dur
-                        ? 'bg-blue-600 text-white border-blue-500 font-bold shadow-sm'
-                        : 'bg-slate-900 text-slate-400 border-slate-800 hover:text-slate-200'
+                        ? 'btnprimary'
+                        : 'btnghost text-text-muted hover:text-text-primary'
                     }`}
                   >
                     {dur >= 60 ? `${dur / 60}h` : `${dur}m`}
@@ -398,25 +392,24 @@ export const PlanFormModal: React.FC<PlanFormModalProps> = ({
               </div>
             </div>
 
-            {/* Conflict Warning */}
             {conflictingTasks.length > 0 && (
-              <div className="p-2.5 bg-amber-950/40 border border-amber-600/50 rounded-xl flex items-start gap-2 text-xs text-amber-300 animate-in fade-in">
+              <div className="p-2.5 rounded-lg border border-amber-500/50 bg-amber-900/10 flex items-start gap-2 text-xs text-amber-300 animatefadein duration-200">
                 <AlertTriangle className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
                 <div className="leading-snug">
-                  <span className="font-semibold block">Scheduling Conflict Detected</span>
-                  <span className="text-[11px] text-amber-200/90">
-                    Overlaps with: {conflictingTasks.map(t => `"${t.title}" (${t.startTime}-${t.endTime})`).join(', ')}.
+                  <span className="font-semibold text-amber-400 block">{t('schedulingConflict', lang)}</span>
+                  <span className="text-[10px] text-amber-200/90">
+                    {t('overlapsWith', lang)}: {conflictingTasks.map(t => `"${t.title}" (${t.startTime}-${t.endTime})`).join(', ')}.
                   </span>
                 </div>
               </div>
             )}
           </div>
 
-          {/* Priority Selection */}
+          {/* Priority */}
           <div>
-            <label className="text-xs font-semibold text-slate-300 block mb-1.5 flex items-center gap-1.5">
+            <label className="fieldlabel flex items-center gap-1.5">
               <Zap className="w-3.5 h-3.5 text-amber-400" />
-              <span>{t('priorityLabel', lang)}</span>
+              {t('priorityLabel', lang)}
             </label>
             <div className="grid grid-cols-4 gap-2">
               {[
@@ -429,10 +422,10 @@ export const PlanFormModal: React.FC<PlanFormModalProps> = ({
                   key={p.id}
                   type="button"
                   onClick={() => setPriority(p.id as TaskPriority)}
-                  className={`py-2 px-1 text-center rounded-xl text-xs font-semibold border transition cursor-pointer ${
+                  className={`py-2 text-center rounded-lg text-[10px] font-semibold border transition cursor-pointer ${
                     priority === p.id
-                      ? `${p.color} ring-1 ring-current font-bold`
-                      : 'border-slate-800 bg-slate-950 text-slate-400 hover:border-slate-700'
+                      ? `${p.color} ring-1 ring-current font-bold shadow-sm`
+                      : 'border-border-default bg-surface-base text-text-muted hover:border-border-focused'
                   }`}
                 >
                   {p.label}
@@ -441,94 +434,87 @@ export const PlanFormModal: React.FC<PlanFormModalProps> = ({
             </div>
           </div>
 
-          {/* Advanced Options Toggle */}
+          {/* Advanced Options */}
           <button
             type="button"
             onClick={() => setShowAdvanced(!showAdvanced)}
-            className="w-full py-2 px-3 bg-slate-950 hover:bg-slate-800/80 text-slate-400 hover:text-slate-200 border border-slate-800 rounded-xl text-xs font-medium transition cursor-pointer flex items-center justify-between"
+            className="w-full py-2 px-3 rounded-lg border border-border-default bg-surface-elevated/50 text-text-muted hover:text-text-primary hover:bg-surface-hover text-xs font-medium transition cursor-pointer flex items-center justify-between"
           >
             <span className="flex items-center gap-1.5">
               <Repeat className="w-3.5 h-3.5 text-blue-400" />
-              <span>Reminder & Recurring Schedule</span>
+              <span>{t('reminderRecurringSchedule', lang)}</span>
             </span>
             {showAdvanced ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
           </button>
 
-          {/* Advanced Section */}
           {showAdvanced && (
-            <div className="p-3.5 bg-slate-950/40 rounded-xl border border-slate-800/80 space-y-3 animate-in fade-in">
-              {/* Reminder Options */}
+            <div className="p-3 rounded-lg border border-border-default bg-surface-elevated/50 space-y-3 animatefadein duration-200">
               <div>
-                <label className="text-xs font-semibold text-slate-300 block mb-1.5 flex items-center gap-1.5">
+                <label className="fieldlabel flex items-center gap-1.5">
                   <Bell className="w-3.5 h-3.5 text-amber-400" />
-                  <span>Task Reminder</span>
+                  {t('taskReminder', lang)}
                 </label>
                 <select
                   value={reminderMinutesBefore}
                   onChange={(e) => setReminderMinutesBefore(Number(e.target.value))}
-                  className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-blue-500 cursor-pointer"
+                  className="fieldselect"
                 >
-                  <option value={-1}>No Reminder</option>
-                  <option value={0}>At Start Time</option>
-                  <option value={5}>5 minutes before</option>
-                  <option value={10}>10 minutes before</option>
-                  <option value={15}>15 minutes before</option>
-                  <option value={30}>30 minutes before</option>
-                  <option value={60}>1 hour before</option>
+                  <option value={-1}>{t('noReminder', lang)}</option>
+                  <option value={0}>{t('atStartTime', lang)}</option>
+                  <option value={5}>5 {t('minutesBefore', lang)}</option>
+                  <option value={10}>10 {t('minutesBefore', lang)}</option>
+                  <option value={15}>15 {t('minutesBefore', lang)}</option>
+                  <option value={30}>30 {t('minutesBefore', lang)}</option>
+                  <option value={60}>1 {t('hourBefore', lang)}</option>
                 </select>
               </div>
 
-              {/* Recurring Schedule */}
               <div>
-                <label className="text-xs font-semibold text-slate-300 block mb-1.5 flex items-center gap-1.5">
+                <label className="fieldlabel flex items-center gap-1.5">
                   <Repeat className="w-3.5 h-3.5 text-blue-400" />
-                  <span>Recurring Activity</span>
+                  {t('recurringActivity', lang)}
                 </label>
                 <select
                   value={recurrenceFreq}
                   onChange={(e) => setRecurrenceFreq(e.target.value as RecurrenceFrequency)}
-                  className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-blue-500 cursor-pointer"
+                  className="fieldselect"
                 >
-                  <option value="none">One-time Task (No Recurrence)</option>
-                  <option value="daily">Every Day (Monday–Sunday)</option>
-                  <option value="weekdays">Every Weekday (Monday–Friday)</option>
-                  <option value="weekly">Weekly (Every {formatReadableDate(date, { shortDay: true }).split(',')[0]})</option>
+                  <option value="none">{t('oneTimeTask', lang)}</option>
+                  <option value="daily">{t('everyDay', lang)}</option>
+                  <option value="weekdays">{t('everyWeekday', lang)}</option>
+                  <option value="weekly">{t('weekly', lang)} {formatReadableDate(date, { shortDay: true }).split(',')[0]}</option>
                 </select>
               </div>
 
-              {/* Optional Description / Notes */}
               <div>
-                <label className="text-xs font-semibold text-slate-300 block mb-1.5">
-                  {t('notesLabel', lang)}
-                </label>
+                <label className="fieldlabel">{t('notesLabel', lang)}</label>
                 <textarea
                   rows={2}
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                   placeholder="Optional details, checklist or meeting links..."
-                  className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-blue-500"
+                  className="fieldtextarea"
                 />
               </div>
             </div>
           )}
-
         </form>
 
-        {/* Pinned Actions Footer - Always visible above mobile keyboard */}
-        <div className="shrink-0 flex items-center justify-end gap-2 px-4 sm:px-5 py-3 border-t border-slate-800 bg-slate-900/95">
+        {/* Footer */}
+        <div className="shrink-0 flex items-center justify-end gap-2 px-4 sm:px-5 py-3 border-t border-border-default bg-surface-panel/95 backdrop-blur-sm">
           <button
             type="button"
             onClick={onClose}
-            className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-xs font-medium transition cursor-pointer"
+            className="btnsecondary btnmd text-[11px]"
           >
             {t('cancel', lang)}
           </button>
           <button
             type="submit"
             form="plan-form-modal-form"
-            className="px-5 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-xs font-semibold shadow-md shadow-blue-600/20 transition active:scale-95 cursor-pointer flex items-center gap-1.5 whitespace-nowrap"
+            className="btnprimary btnmd text-[11px] flex items-center gap-1.5 whitespace-nowrap"
           >
-            <Check className="w-4 h-4 shrink-0" />
+            <Check className="w-3.5 h-3.5 shrink-0" />
             <span>{initialTask ? t('saveChanges', lang) : t('createPlan', lang)}</span>
           </button>
         </div>

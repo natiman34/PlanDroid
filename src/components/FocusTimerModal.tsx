@@ -50,7 +50,6 @@ interface FocusTimerModalProps {
   onCompleteTask: (taskId: string) => void;
   onRecordFocusSession?: (session: Omit<FocusSession, 'id'>) => void;
   onUpdateTaskActualTime?: (taskId: string, additionalMinutes: number) => void;
-  onStartNextSession?: () => void;
   onUpdateSettings?: (settings: NotificationSettings) => void;
 }
 
@@ -123,7 +122,6 @@ export const FocusTimerModal: React.FC<FocusTimerModalProps> = ({
   const [showOneMinWarning, setShowOneMinWarning] = useState<boolean>(false);
   const [isAlarmPlaying, setIsAlarmPlaying] = useState<boolean>(false);
 
-  // Focus Audio ambient sound loop state
   const [selectedAudioTrack, setSelectedAudioTrack] = useState<FocusAudioTrack>(
     () => settings.focusAudioTrack || 'off'
   );
@@ -186,6 +184,7 @@ export const FocusTimerModal: React.FC<FocusTimerModalProps> = ({
     saveActiveTimerToStorage(null);
     stopFocusAudio();
     setIsAudioPlaying(false);
+    setIsAlarmPlaying(false);
 
     // 1. Play configurable repeating alarm sound if enabled
     if (settings.timerAlarmEnabled) {
@@ -240,7 +239,6 @@ export const FocusTimerModal: React.FC<FocusTimerModalProps> = ({
             triggerCompletion();
           }
         } else {
-          // Stopwatch
           const elapsed = Math.max(0, Math.round((Date.now() - stopwatchStartedAtRef.current) / 1000));
           setStopwatchSeconds(elapsed);
         }
@@ -256,7 +254,7 @@ export const FocusTimerModal: React.FC<FocusTimerModalProps> = ({
     };
   }, [isRunning, timerMode, triggerCompletion]);
 
-  // Active Timer Interval Tick (runs every 500ms for smooth display)
+  // Active Timer Interval Tick
   useEffect(() => {
     let interval: any = null;
 
@@ -284,12 +282,10 @@ export const FocusTimerModal: React.FC<FocusTimerModalProps> = ({
             triggerCompletion();
           }
         } else {
-          // Stopwatch mode
           const elapsed = Math.max(0, Math.round((Date.now() - stopwatchStartedAtRef.current) / 1000));
           setStopwatchSeconds(elapsed);
         }
 
-        // Keep native notification updated periodically (every 10s)
         const now = Date.now();
         if (now - lastNotifUpdateRef.current > 10000) {
           lastNotifUpdateRef.current = now;
@@ -307,7 +303,6 @@ export const FocusTimerModal: React.FC<FocusTimerModalProps> = ({
     };
   }, [isRunning, isCompleted, timerMode, settings, task, lang, triggerCompletion, secondsLeft, stopwatchSeconds]);
 
-  // Focus Audio selection & playback handlers
   const handleSelectAudioTrack = (track: FocusAudioTrack) => {
     setSelectedAudioTrack(track);
     if (onUpdateSettings) {
@@ -360,10 +355,8 @@ export const FocusTimerModal: React.FC<FocusTimerModalProps> = ({
     }
   };
 
-  // Toggle Timer Play/Pause
   const handleToggleTimer = () => {
     if (isRunning) {
-      // PAUSING
       setIsRunning(false);
       stopFocusAudio();
       setIsAudioPlaying(false);
@@ -397,7 +390,6 @@ export const FocusTimerModal: React.FC<FocusTimerModalProps> = ({
         });
       }
     } else {
-      // STARTING / RESUMING
       setIsRunning(true);
       if (selectedAudioTrack !== 'off') {
         const started = startFocusAudio(selectedAudioTrack, audioVolume);
@@ -433,7 +425,6 @@ export const FocusTimerModal: React.FC<FocusTimerModalProps> = ({
     }
   };
 
-  // Reset Timer
   const handleReset = () => {
     setIsRunning(false);
     setIsCompleted(false);
@@ -455,7 +446,6 @@ export const FocusTimerModal: React.FC<FocusTimerModalProps> = ({
     saveActiveTimerToStorage(null);
   };
 
-  // Stop early & log actual tracked time
   const handleStopEarly = () => {
     stopAlarmLoop();
     stopFocusAudio();
@@ -526,7 +516,6 @@ export const FocusTimerModal: React.FC<FocusTimerModalProps> = ({
     setIsRunning(true);
   };
 
-  // Confirmation actions upon completion:
   const handleConfirmMarkComplete = () => {
     stopAlarmLoop();
     setIsAlarmPlaying(false);
@@ -574,10 +563,10 @@ export const FocusTimerModal: React.FC<FocusTimerModalProps> = ({
   const strokeDashoffset = 565.48 * (1 - fraction);
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-200">
-      <div className="w-full max-w-sm rounded-3xl bg-slate-900 border border-slate-800 p-6 shadow-2xl relative text-center max-h-[92vh] overflow-y-auto">
-        {/* Top Header Controls: Minimize & Close */}
-        <div className="flex items-center justify-end gap-1 -mt-1 mb-2">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-black/60 backdrop-blur-sm animatefadein duration-200">
+      <div className="w-full max-w-[340px] rounded-2xl border border-border-default bg-surface-panel shadow-xl relative max-h-[92vh] overflow-y-auto outline-none">
+        {/* Top Header Controls */}
+        <div className="flex items-center justify-end gap-1 -mt-1 mb-3">
           <button
             type="button"
             onClick={() => {
@@ -587,7 +576,7 @@ export const FocusTimerModal: React.FC<FocusTimerModalProps> = ({
             }}
             aria-label="Minimize focus timer"
             title="Minimize to floating timer bar"
-            className="p-2 rounded-full text-slate-400 hover:text-slate-200 hover:bg-slate-800 transition cursor-pointer"
+            className="btnicon btnghost size-8 text-text-muted hover:text-text-primary hover:bg-surface-hover"
           >
             <Minimize2 className="w-4 h-4" />
           </button>
@@ -600,9 +589,9 @@ export const FocusTimerModal: React.FC<FocusTimerModalProps> = ({
               onClose();
             }}
             aria-label={t('cancel', lang)}
-            className="p-2 rounded-full text-slate-400 hover:text-slate-200 hover:bg-slate-800 transition cursor-pointer"
+            className="btnicon btnghost size-8 text-text-muted hover:text-text-primary hover:bg-surface-hover"
           >
-            <X className="w-5 h-5" />
+            <X className="w-4 h-4" />
           </button>
         </div>
 
@@ -616,10 +605,10 @@ export const FocusTimerModal: React.FC<FocusTimerModalProps> = ({
               setSecondsLeft(initialTotalSeconds);
             }}
             disabled={isRunning}
-            className={`px-3 py-1 rounded-xl text-xs font-semibold transition cursor-pointer flex items-center gap-1.5 ${
+            className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-200 cursor-pointer flex items-center gap-1.5 ${
               timerMode === 'countdown'
-                ? 'bg-blue-600 text-white shadow-sm'
-                : 'bg-slate-800 text-slate-400 hover:text-slate-200'
+                ? 'btnprimary'
+                : 'btnghost text-text-muted hover:text-text-primary'
             } ${isRunning ? 'opacity-50 cursor-not-allowed' : ''}`}
           >
             <Timer className="w-3.5 h-3.5" />
@@ -633,10 +622,10 @@ export const FocusTimerModal: React.FC<FocusTimerModalProps> = ({
               setTimerMode('stopwatch');
             }}
             disabled={isRunning}
-            className={`px-3 py-1 rounded-xl text-xs font-semibold transition cursor-pointer flex items-center gap-1.5 ${
+            className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-200 cursor-pointer flex items-center gap-1.5 ${
               timerMode === 'stopwatch'
-                ? 'bg-indigo-600 text-white shadow-sm'
-                : 'bg-slate-800 text-slate-400 hover:text-slate-200'
+                ? 'btnsecondary'
+                : 'btnghost text-text-muted hover:text-text-primary'
             } ${isRunning ? 'opacity-50 cursor-not-allowed' : ''}`}
           >
             <Clock className="w-3.5 h-3.5" />
@@ -652,10 +641,10 @@ export const FocusTimerModal: React.FC<FocusTimerModalProps> = ({
               setSecondsLeft((nextType === 'break' ? 5 : task.durationMinutes) * 60);
             }}
             disabled={isRunning}
-            className={`px-3 py-1 rounded-xl text-xs font-semibold transition cursor-pointer flex items-center gap-1.5 ${
+            className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-200 cursor-pointer flex items-center gap-1.5 ${
               sessionType === 'break'
-                ? 'bg-emerald-600 text-white shadow-sm'
-                : 'bg-slate-800 text-slate-400 hover:text-slate-200'
+                ? 'btnsuccess'
+                : 'btnghost text-text-muted hover:text-text-primary'
             } ${isRunning ? 'opacity-50 cursor-not-allowed' : ''}`}
             title="Toggle focus or short break session"
           >
@@ -666,29 +655,27 @@ export const FocusTimerModal: React.FC<FocusTimerModalProps> = ({
 
         {/* Task Header */}
         <div className="mb-3">
-          <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider mb-2 border ${
+          <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider mb-2 border ${
             sessionType === 'break'
-              ? 'bg-emerald-950 text-emerald-400 border-emerald-800/80'
-              : 'bg-blue-950 text-blue-400 border-blue-800/80'
+              ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/40'
+              : 'bg-blue-500/20 text-blue-400 border-blue-500/40'
           }`}>
-            {sessionType === 'break' ? <Coffee className="w-3.5 h-3.5 text-emerald-400" /> : <Flame className="w-3.5 h-3.5 text-amber-400" />}
+            {sessionType === 'break' ? <Coffee className="w-3 h-3 text-emerald-400" /> : <Flame className="w-3 h-3 text-amber-400" />}
             {sessionType === 'break' ? 'Recharge Break' : t('deepFocusTimer', lang)}
           </span>
-          <h3 className="text-base font-bold text-slate-100 truncate px-4">
+          <h3 className="text-sm font-bold text-text-primary truncate px-2">
             {task.title}
           </h3>
-          <div className="flex items-center justify-center gap-3 text-xs text-slate-400 mt-1">
+          <div className="flex items-center justify-center gap-3 text-[10px] text-text-muted mt-1">
             <span>Est: {task.durationMinutes}m</span>
-            <span>•</span>
-            <span className="text-blue-400 font-semibold">
-              Actual: {task.actualDurationMinutes || 0}m
-            </span>
+            <span className="w-[1px] h-3 bg-border-default"></span>
+            <span className="text-blue-400 font-semibold">Actual: {task.actualDurationMinutes || 0}m</span>
           </div>
         </div>
 
         {/* 1-Minute Warning Banner */}
         {showOneMinWarning && !isCompleted && (
-          <div className="mb-3 py-2 px-3.5 bg-amber-500/20 border border-amber-500/40 rounded-2xl text-amber-300 text-xs font-semibold flex items-center justify-center gap-2 animate-bounce shadow-lg shadow-amber-500/10">
+          <div className="mb-3 py-2 px-3 rounded-lg bg-amber-500/20 border border-amber-500/40 text-amber-300 text-xs font-semibold flex items-center justify-center gap-2 shadow-lg shadow-amber-500/10">
             <Bell className="w-4 h-4 text-amber-400 shrink-0" />
             <span>{t('oneMinuteRemaining', lang)}</span>
           </div>
@@ -696,49 +683,46 @@ export const FocusTimerModal: React.FC<FocusTimerModalProps> = ({
 
         {/* Completion Confirmation Dialog inside Timer */}
         {isCompleted ? (
-          <div className="my-3 p-5 bg-gradient-to-b from-slate-900 to-emerald-950/60 border border-emerald-800/80 rounded-3xl space-y-4 animate-in zoom-in-95 shadow-2xl">
-            {/* Pulsing Bell Indicator */}
-            <div className="relative w-14 h-14 mx-auto flex items-center justify-center">
-              <span className="absolute inset-0 rounded-2xl bg-amber-500/20 animate-ping" />
-              <div className="relative w-12 h-12 rounded-2xl bg-amber-500/25 border border-amber-500/50 flex items-center justify-center shadow-lg shadow-amber-500/20">
+          <div className="my-3 p-5 rounded-2xl bg-gradient-to-b from-surface-elevated to-emerald-900/30 border border-emerald-800/40 space-y-4 animatezoomin duration-200 shadow-xl">
+            <div className="relative w-16 h-16 mx-auto flex items-center justify-center">
+              <span className="absolute inset-0 rounded-full bg-amber-500/20 animate-ping" />
+              <div className="relative w-14 h-14 rounded-full bg-amber-500/25 border border-amber-500/50 flex items-center justify-center shadow-lg shadow-amber-500/20">
                 <Bell className="w-6 h-6 text-amber-400" />
               </div>
             </div>
 
             <div>
-              <h4 className="text-base font-extrabold text-slate-100">
+              <h4 className="text-base font-bold text-text-primary">
                 {sessionType === 'break' ? 'Break Finished!' : t('timerFinished', lang)}
               </h4>
-              <p className="text-xs text-slate-300 mt-1 leading-relaxed">
+              <p className="text-xs text-text-secondary mt-1 leading-relaxed">
                 {sessionType === 'break'
                   ? 'Time to jump back into action!'
                   : 'Great work! Would you like to mark this task complete now?'}
               </p>
             </div>
 
-            {/* Sustained Alarm Audio Status Bar */}
             {isAlarmPlaying && (
-              <div className="flex items-center justify-between p-2.5 rounded-xl bg-amber-950/50 border border-amber-600/50 text-amber-200 text-xs font-semibold">
+              <div className="flex items-center justify-between p-2.5 rounded-lg bg-amber-950/40 border border-amber-600/40 text-amber-200 text-xs font-semibold">
                 <div className="flex items-center gap-2">
-                  <Volume2 className="w-4 h-4 text-amber-400 animate-pulse shrink-0" />
+                  <Volume2 className="w-4 h-4 text-amber-400 animateandroidpulse shrink-0" />
                   <span className="font-bold">{t('alarmRinging', lang)}</span>
                 </div>
                 <button
                   type="button"
                   onClick={handleStopAlarmSound}
-                  className="px-2 py-0.5 rounded-lg bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs font-bold transition cursor-pointer active:scale-95"
+                  className="px-2 py-0.5 rounded-lg bg-amber-500 hover:bg-amber-400 text-slate-950 text-[10px] font-bold transition cursor-pointer active:scale-[0.97]"
                 >
                   {t('stopAlarm', lang)}
                 </button>
               </div>
             )}
 
-            {/* Explicit Completion Confirmation Buttons */}
             <div className="space-y-2 pt-1">
               <button
                 type="button"
                 onClick={handleConfirmMarkComplete}
-                className="w-full py-2.5 px-3 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold transition flex items-center justify-center gap-2 cursor-pointer shadow-lg shadow-emerald-600/30 active:scale-95"
+                className="w-full py-3 px-4 btnprimary text-xs font-bold shadow-lg shadow-emerald-600/30 flex items-center justify-center gap-2"
               >
                 <CheckCircle2 className="w-4 h-4" />
                 <span>Mark Task Complete</span>
@@ -748,16 +732,16 @@ export const FocusTimerModal: React.FC<FocusTimerModalProps> = ({
                 <button
                   type="button"
                   onClick={() => handleSnooze(5)}
-                  className="py-2 px-3 bg-amber-600/30 hover:bg-amber-600/40 text-amber-300 border border-amber-500/40 rounded-xl font-semibold transition cursor-pointer flex items-center justify-center gap-1.5"
+                  className="py-2 px-3 rounded-lg bg-amber-600/20 hover:bg-amber-600/30 text-amber-300 border border-amber-500/40 font-semibold transition cursor-pointer flex items-center justify-center gap-1.5"
                 >
                   <Bell className="w-3.5 h-3.5" />
-                  <span>Snooze 5 Min</span>
+                  <span>Snooze 5m</span>
                 </button>
 
                 <button
                   type="button"
                   onClick={() => handleStartBreak(5)}
-                  className="py-2 px-3 bg-blue-600/30 hover:bg-blue-600/40 text-blue-300 border border-blue-500/40 rounded-xl font-semibold transition cursor-pointer flex items-center justify-center gap-1.5"
+                  className="py-2 px-3 rounded-lg bg-blue-600/20 hover:bg-blue-600/30 text-blue-300 border border-blue-500/40 font-semibold transition cursor-pointer flex items-center justify-center gap-1.5"
                 >
                   <Coffee className="w-3.5 h-3.5" />
                   <span>Take 5m Break</span>
@@ -767,7 +751,7 @@ export const FocusTimerModal: React.FC<FocusTimerModalProps> = ({
               <button
                 type="button"
                 onClick={handleDismissWithoutCompleting}
-                className="w-full py-2 px-3 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-xs font-medium transition cursor-pointer"
+                className="w-full py-2 px-3 rounded-lg bg-surface-elevated hover:bg-surface-hover text-text-secondary text-xs font-medium transition cursor-pointer border border-border-default"
               >
                 Keep Incomplete & Dismiss
               </button>
@@ -776,9 +760,8 @@ export const FocusTimerModal: React.FC<FocusTimerModalProps> = ({
         ) : (
           <>
             {/* SVG Circular Countdown / Stopwatch Ring */}
-            <div className="relative w-52 h-52 mx-auto my-3 flex items-center justify-center">
+            <div className="relative w-48 h-48 mx-auto my-3 flex items-center justify-center">
               <svg className="w-full h-full transform -rotate-90" viewBox="0 0 200 200">
-                {/* Background ring */}
                 <circle
                   cx="100"
                   cy="100"
@@ -786,9 +769,8 @@ export const FocusTimerModal: React.FC<FocusTimerModalProps> = ({
                   stroke="currentColor"
                   strokeWidth="8"
                   fill="transparent"
-                  className="text-slate-800"
+                  className="text-surface-hover"
                 />
-                {/* Progress ring */}
                 <circle
                   cx="100"
                   cy="100"
@@ -805,12 +787,11 @@ export const FocusTimerModal: React.FC<FocusTimerModalProps> = ({
                 />
               </svg>
 
-              {/* Time Display inside Ring */}
-              <div className="absolute flex flex-col items-center justify-center">
-                <span className="text-4xl font-extrabold font-mono text-slate-100 tracking-tight">
+              <div className="absolute inset-0 flex flex-col items-center justify-center">
+                <span className="text-3xl sm:text-5xl font-extrabold font-mono text-text-primary tracking-tight">
                   {formattedTime}
                 </span>
-                <span className="text-xs font-medium text-slate-400 mt-1 uppercase tracking-wider">
+                <span className="text-xs font-medium text-text-muted mt-1 uppercase tracking-wider">
                   {isRunning ? (sessionType === 'break' ? 'Recharging...' : t('focusingStatus', lang)) : displaySecs === 0 ? t('completedStatus', lang) : t('pausedStatus', lang)}
                 </span>
               </div>
@@ -824,37 +805,34 @@ export const FocusTimerModal: React.FC<FocusTimerModalProps> = ({
                   onClick={() => handleAdjustMinutes(-5)}
                   disabled={secondsLeft <= 60}
                   aria-label="Subtract 5 minutes"
-                  className="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 disabled:opacity-30 disabled:cursor-not-allowed transition cursor-pointer"
+                  className="btnicon btnoutline size-8 disabled:opacity-30 disabled:cursor-not-allowed"
                   title="-5 min"
                 >
-                  <Minus className="w-4 h-4" />
+                  <Minus className="w-3.5 h-3.5" />
                 </button>
-                <span className="text-xs text-slate-400 font-mono">{t('adjustTime', lang)}</span>
+                <span className="text-[10px] text-text-muted font-mono">{t('adjustTime', lang)}</span>
                 <button
                   type="button"
                   onClick={() => handleAdjustMinutes(5)}
                   aria-label="Add 5 minutes"
-                  className="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 transition cursor-pointer"
+                  className="btnicon btnoutline size-8"
                   title="+5 min"
                 >
-                  <Plus className="w-4 h-4" />
+                  <Plus className="w-3.5 h-3.5" />
                 </button>
               </div>
             )}
 
             {/* Focus Audio Ambient / Noise Loop Integration */}
-            <div
-              data-testid="focus-audio-panel"
-              className="mb-4 p-3 rounded-2xl bg-slate-950/70 border border-slate-800/90 text-left space-y-2.5"
-            >
+            <div className="mb-4 p-3 rounded-lg border border-border-default bg-surface-elevated/50 text-left space-y-2.5">
               <div className="flex items-center justify-between gap-2">
                 <div className="flex items-center gap-2">
                   <Headphones className="w-3.5 h-3.5 text-indigo-400" />
-                  <span className="text-[11px] font-bold uppercase tracking-wider text-slate-300">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-text-muted">
                     Focus Audio
                   </span>
                   {isAudioPlaying && selectedAudioTrack !== 'off' && (
-                    <span className="text-[10px] font-semibold text-emerald-400 bg-emerald-950/70 border border-emerald-800/50 px-1.5 py-0.5 rounded-full">
+                    <span className="text-[10px] font-semibold text-emerald-400 bg-emerald-900/30 border border-emerald-500/40 px-1.5 py-0.5 rounded-full">
                       Playing
                     </span>
                   )}
@@ -864,10 +842,10 @@ export const FocusTimerModal: React.FC<FocusTimerModalProps> = ({
                   type="button"
                   onClick={handleToggleAudioPlayback}
                   aria-label={isAudioPlaying ? 'Mute focus audio' : 'Play focus audio'}
-                  className={`px-2 py-1 rounded-lg text-[11px] font-semibold flex items-center gap-1 transition cursor-pointer ${
+                  className={`px-2 py-1 rounded-lg text-[10px] font-semibold flex items-center gap-1 transition cursor-pointer ${
                     isAudioPlaying
-                      ? 'bg-indigo-600/25 text-indigo-300 border border-indigo-500/40'
-                      : 'bg-slate-800 text-slate-400 hover:text-slate-200 border border-slate-700/70'
+                      ? 'bg-indigo-600/20 text-indigo-300 border border-indigo-500/40'
+                      : 'btnghost text-text-muted hover:text-text-primary'
                   }`}
                 >
                   {isAudioPlaying ? (
@@ -884,7 +862,6 @@ export const FocusTimerModal: React.FC<FocusTimerModalProps> = ({
                 </button>
               </div>
 
-              {/* Ambient Sound Loop Options */}
               <div className="flex flex-wrap gap-1.5">
                 {FOCUS_AUDIO_OPTIONS.map((option) => {
                   const isActive = selectedAudioTrack === option.id;
@@ -894,12 +871,12 @@ export const FocusTimerModal: React.FC<FocusTimerModalProps> = ({
                       type="button"
                       onClick={() => handleSelectAudioTrack(option.id)}
                       aria-pressed={isActive}
-                      className={`px-2.5 py-1.5 rounded-xl text-[11px] font-semibold transition cursor-pointer whitespace-nowrap ${
+                      className={`px-2 py-1 rounded-lg text-[10px] font-semibold transition cursor-pointer whitespace-nowrap ${
                         isActive
                           ? option.id === 'off'
-                            ? 'bg-slate-700 text-slate-100 border border-slate-500'
-                            : 'bg-indigo-600 text-white border border-indigo-400 shadow-sm shadow-indigo-600/30'
-                          : 'bg-slate-900 text-slate-400 hover:text-slate-200 border border-slate-800 hover:border-slate-700'
+                            ? 'bg-surface-hover text-text-secondary border border-border-default'
+                            : 'btnprimary'
+                          : 'btnghost text-text-muted hover:text-text-primary'
                       }`}
                     >
                       {option.label}
@@ -908,10 +885,9 @@ export const FocusTimerModal: React.FC<FocusTimerModalProps> = ({
                 })}
               </div>
 
-              {/* Volume Control */}
               {selectedAudioTrack !== 'off' && (
                 <div className="flex items-center gap-2.5 pt-0.5">
-                  <Volume2 className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                  <Volume2 className="w-3 h-3 text-text-muted shrink-0" />
                   <input
                     type="range"
                     min={0.1}
@@ -920,9 +896,9 @@ export const FocusTimerModal: React.FC<FocusTimerModalProps> = ({
                     value={audioVolume}
                     onChange={(e) => handleAudioVolumeChange(parseFloat(e.target.value))}
                     aria-label="Focus Audio Volume"
-                    className="flex-1 accent-indigo-500 h-1.5 bg-slate-800 rounded-lg cursor-pointer"
+                    className="flex-1 accent-blue-500 h-1.5 bg-surface-hover rounded-lg cursor-pointer"
                   />
-                  <span className="text-[11px] font-mono text-slate-400 w-9 text-right">
+                  <span className="text-[10px] font-mono text-text-muted w-8 text-right">
                     {Math.round(audioVolume * 100)}%
                   </span>
                 </div>
@@ -930,33 +906,33 @@ export const FocusTimerModal: React.FC<FocusTimerModalProps> = ({
             </div>
 
             {/* Primary Controls: Reset, Play/Pause, Mark Done */}
-            <div className="flex items-center justify-center gap-3 mb-3">
+            <div className="flex items-center justify-center gap-2 mb-3">
               <button
                 type="button"
                 onClick={handleReset}
-                className="p-3 rounded-2xl bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 transition cursor-pointer"
+                className="btnicon btnoutline size-10"
                 title={t('reset', lang)}
               >
-                <RotateCcw className="w-5 h-5" />
+                <RotateCcw className="w-4 h-4" />
               </button>
 
               <button
                 type="button"
                 onClick={handleToggleTimer}
-                className={`px-8 py-3 rounded-2xl font-bold text-sm flex items-center gap-2 shadow-lg transition active:scale-95 cursor-pointer ${
+                className={`px-6 py-2.5 rounded-xl font-bold text-sm flex items-center gap-2 shadow-lg transition active:scale-[0.97] cursor-pointer ${
                   isRunning
-                    ? 'bg-amber-600 hover:bg-amber-500 text-white shadow-amber-600/30'
-                    : 'bg-blue-600 hover:bg-blue-500 text-white shadow-blue-600/30'
+                    ? 'btnwarning'
+                    : 'btnprimary'
                 }`}
               >
                 {isRunning ? (
                   <>
-                    <Pause className="w-5 h-5" />
+                    <Pause className="w-4 h-4" />
                     <span>{t('pause', lang)}</span>
                   </>
                 ) : (
                   <>
-                    <Play className="w-5 h-5 fill-current" />
+                    <Play className="w-4 h-4 fill-current" />
                     <span>{t('start', lang)}</span>
                   </>
                 )}
@@ -965,19 +941,19 @@ export const FocusTimerModal: React.FC<FocusTimerModalProps> = ({
               <button
                 type="button"
                 onClick={handleManualComplete}
-                className="p-3 rounded-2xl bg-emerald-600/20 hover:bg-emerald-600 text-emerald-400 hover:text-white border border-emerald-500/40 transition cursor-pointer"
+                className="btnicon btnghost size-10 text-emerald-400 hover:text-emerald-300 hover:bg-emerald-500/20 border border-emerald-500/30"
                 title={t('markDone', lang)}
               >
-                <CheckCircle2 className="w-5 h-5" />
+                <CheckCircle2 className="w-4 h-4" />
               </button>
             </div>
 
             {/* Secondary Controls: Early Stop with Accurate Time Log */}
-            <div className="pt-2 border-t border-slate-800/80 flex items-center justify-center">
+            <div className="pt-2 border-t border-border-default flex items-center justify-center">
               <button
                 type="button"
                 onClick={handleStopEarly}
-                className="text-xs text-slate-400 hover:text-rose-400 transition cursor-pointer font-medium py-1 px-3 rounded-lg hover:bg-rose-950/20"
+                className="text-[10px] text-text-muted hover:text-rose-400 transition cursor-pointer font-medium py-1 px-2 rounded-lg hover:bg-rose-900/20"
                 title="Stop timer and log elapsed minutes spent so far"
               >
                 {t('stopEarly', lang)}

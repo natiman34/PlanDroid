@@ -40,7 +40,7 @@ export const FeaturesView: React.FC<FeaturesViewProps> = ({
   const percentComplete = totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0;
 
   return (
-    <div className="w-full space-y-5 animate-in fade-in duration-200">
+    <div className="w-full space-y-5 animatefadein duration-200">
       {/* Top Header */}
       <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5">
         <div className="flex items-center gap-3">

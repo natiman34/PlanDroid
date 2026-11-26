@@ -23,6 +23,7 @@ import {
   Sparkles,
   AlertCircle,
   Vibrate,
+  Copy,
 } from 'lucide-react';
 import { playAlarmSound, playOneMinuteWarning } from '../utils/audio';
 import { requestNotificationPermission, getNotificationStatus } from '../utils/notifications';
@@ -138,8 +139,46 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
     e.target.value = '';
   };
 
+  const sectionHeader = (icon: React.FC<{ className?: string }>, label: string, subtitle?: string) => {
+    const Icon = icon;
+    return (
+      <div className="sectionheader">
+        <div className="w-8 h-8 rounded-lg bg-surface-elevated flex items-center justify-center text-blue-400 border border-border-default shrink-0">
+          <Icon className="w-4 h-4 text-blue-400" />
+        </div>
+        <div>
+          <h3 className="sectiontitle">{label}</h3>
+          {subtitle && <p className="text-[10px] text-text-muted">{subtitle}</p>}
+        </div>
+      </div>
+    );
+  };
+
+  const optionButton = (
+    label: string,
+    onClick: () => void,
+    isSelected: boolean,
+    variant: 'primary' | 'success' | 'amber' | 'blue' | 'indigo' | 'emerald' | 'gray' = 'gray',
+  ) => {
+    const base = 'flex-1 py-2.5 rounded-lg text-xs font-semibold border transition cursor-pointer text-center flex flex-col items-center gap-0.5';
+    const activeClasses = {
+      primary: 'bg-blue-600 border-blue-500 text-white font-bold shadow-sm shadow-blue-500/20',
+      success: 'bg-emerald-600 border-emerald-500 text-white font-bold shadow-sm shadow-emerald-500/20',
+      amber: 'bg-amber-600 border-amber-500 text-white font-bold shadow-sm shadow-amber-500/20',
+      blue: 'bg-blue-600 border-blue-500 text-white font-bold shadow-sm shadow-blue-500/20',
+      indigo: 'bg-indigo-600 border-indigo-500 text-white font-bold shadow-sm shadow-indigo-500/20',
+      emerald: 'bg-emerald-600 border-emerald-500 text-white font-bold shadow-sm shadow-emerald-500/20',
+      gray: 'bg-surface-base border-border-default text-text-muted hover:text-text-primary hover:border-border-focused',
+    };
+    return (
+      <button type="button" onClick={onClick} className={`${base} ${activeClasses[variant]}`}>
+        {label}
+      </button>
+    );
+  };
+
   return (
-    <div className="w-full space-y-5 animate-in fade-in duration-200">
+    <div className="w-full space-y-5 pageenter pageenteractive">
       {/* Hidden file input for JSON import */}
       <input
         ref={fileInputRef}
@@ -150,54 +189,47 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
       />
 
       {/* Header */}
-      <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5">
+      <div className="card panel">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-blue-600/20 text-blue-400 border border-blue-500/30 flex items-center justify-center shrink-0">
+          <div className="w-9 h-9 rounded-xl bg-blue-600/20 text-blue-400 border border-blue-500/30 flex items-center justify-center shrink-0">
             <Settings className="w-5 h-5 text-blue-400" />
           </div>
           <div>
-            <h2 className="text-base font-bold text-slate-100">
-              {t('settingsTitle', lang)}
-            </h2>
-            <p className="text-xs text-slate-400">
-              {t('settingsSubtitle', lang)}
-            </p>
+            <h2 className="text-base font-bold text-text-primary">{t('settingsTitle', lang)}</h2>
+            <p className="text-[10px] text-text-muted">{t('settingsSubtitle', lang)}</p>
           </div>
         </div>
       </div>
 
       {/* Notification status banner if import happened */}
       {importStatusMsg && (
-        <div className={`p-4 rounded-xl border flex items-center gap-2 text-xs font-semibold animate-in fade-in ${
-          importStatusMsg.type === 'success'
-            ? 'bg-emerald-950/60 border-emerald-500/60 text-emerald-300'
-            : 'bg-rose-950/60 border-rose-500/60 text-rose-300'
-        }`}>
+        <div
+          className={`p-3 rounded-lg border flex items-center gap-2 text-xs font-semibold animatefadein ${
+            importStatusMsg.type === 'success'
+              ? 'bg-emerald-950/60 border-emerald-500/60 text-emerald-300'
+              : 'bg-rose-950/60 border-rose-500/60 text-rose-300'
+          }`}
+        >
           {importStatusMsg.type === 'success' ? <Check className="w-4 h-4 text-emerald-400" /> : <AlertCircle className="w-4 h-4 text-rose-400" />}
           <span>{importStatusMsg.text}</span>
         </div>
       )}
 
       {/* SECTION 1: PLANNING & PRODUCTIVITY PREFERENCES */}
-      <div className="bg-slate-900/90 border border-slate-800 rounded-2xl p-5 space-y-4">
-        <div className="flex items-center gap-2 pb-3 border-b border-slate-800">
-          <Sliders className="w-4 h-4 text-blue-400" />
-          <h3 className="text-sm font-bold text-slate-100">
-            Weekly Planning & Productivity Preferences
-          </h3>
-        </div>
+      <div className="page-section space-y-4">
+        {sectionHeader(Sliders, t('weeklyPlanningPrefs', lang), t('preferencesDesc', lang))}
 
         {/* App Theme (Dark / Light / System) */}
-        <div className="space-y-1.5 pb-3 border-b border-slate-800/80">
-          <label className="text-xs font-semibold text-slate-300 block flex items-center gap-1.5">
+        <div className="space-y-2">
+          <label className="fieldlabel flex items-center gap-1.5">
             <Sun className="w-3.5 h-3.5 text-amber-400" />
-            <span>Theme & Visual Appearance</span>
+            <span>{t('themeSection', lang)}</span>
           </label>
           <div className="grid grid-cols-3 gap-2">
             {[
-              { id: 'dark', label: 'Dark Mode', desc: 'OLED Black', icon: Moon },
-              { id: 'light', label: 'Light Mode', desc: 'Crisp Slate', icon: Sun },
-              { id: 'system', label: 'System Auto', desc: 'Device Match', icon: Monitor },
+              { id: 'dark', label: 'Dark', desc: t('darkDesc', lang), icon: Moon },
+              { id: 'light', label: 'Light', desc: t('lightDesc', lang), icon: Sun },
+              { id: 'system', label: 'System', desc: t('systemDesc', lang), icon: Monitor },
             ].map((th) => {
               const Icon = th.icon;
               const isSelected = (settings.theme || 'dark') === th.id;
@@ -206,15 +238,15 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
                   key={th.id}
                   type="button"
                   onClick={() => onUpdateSettings({ ...settings, theme: th.id as any })}
-                  className={`p-2.5 rounded-xl text-xs font-medium border text-center transition cursor-pointer flex flex-col items-center gap-1 ${
+                  className={`flex flex-col items-center gap-1 p-2.5 rounded-lg text-[10px] font-medium border transition cursor-pointer ${
                     isSelected
-                      ? 'bg-blue-600 border-blue-500 text-white font-bold shadow-sm'
-                      : 'bg-slate-950/60 border-slate-800 text-slate-400 hover:text-slate-200'
+                      ? 'bg-blue-600 border-blue-500 text-white font-bold shadow-sm shadow-blue-500/20'
+                      : 'btnghost'
                   }`}
                 >
                   <Icon className="w-4 h-4" />
                   <span>{th.label}</span>
-                  <span className="text-[9px] opacity-75">{th.desc}</span>
+                  <span className="text-[9px] opacity-80">{th.desc}</span>
                 </button>
               );
             })}
@@ -222,174 +254,119 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
         </div>
 
         {/* Time Format & Week Start Day */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           {/* Time Format */}
-          <div className="space-y-1.5">
-            <label className="text-xs font-semibold text-slate-300 block">
-              {t('timeFormat', lang)}
-            </label>
+          <div className="space-y-2">
+            <label className="fieldlabel">{t('timeFormat', lang)}</label>
             <div className="grid grid-cols-2 gap-2">
-              <button
-                type="button"
-                onClick={() => onUpdateConfig({ ...config, timeFormat: '24h' })}
-                className={`p-2.5 rounded-xl text-xs font-medium border text-center transition cursor-pointer ${
-                  (config.timeFormat || '24h') === '24h'
-                    ? 'bg-blue-600 border-blue-500 text-white font-bold shadow-sm'
-                    : 'bg-slate-950/60 border-slate-800 text-slate-400 hover:text-slate-200'
-                }`}
-              >
-                24-Hour (14:30)
-              </button>
-              <button
-                type="button"
-                onClick={() => onUpdateConfig({ ...config, timeFormat: '12h' })}
-                className={`p-2.5 rounded-xl text-xs font-medium border text-center transition cursor-pointer ${
-                  config.timeFormat === '12h'
-                    ? 'bg-blue-600 border-blue-500 text-white font-bold shadow-sm'
-                    : 'bg-slate-950/60 border-slate-800 text-slate-400 hover:text-slate-200'
-                }`}
-              >
-                12-Hour (2:30 PM)
-              </button>
+              {optionButton(
+                '24h',
+                () => onUpdateConfig({ ...config, timeFormat: '24h' }),
+                (config.timeFormat || '24h') === '24h',
+                'primary',
+              )}
+              {optionButton(
+                '12h',
+                () => onUpdateConfig({ ...config, timeFormat: '12h' }),
+                config.timeFormat === '12h',
+                'blue',
+              )}
             </div>
           </div>
 
           {/* Week Start Day */}
-          <div className="space-y-1.5">
-            <label className="text-xs font-semibold text-slate-300 block">
-              {t('weekStartDay', lang)}
-            </label>
+          <div className="space-y-2">
+            <label className="fieldlabel">{t('weekStartDay', lang)}</label>
             <div className="grid grid-cols-2 gap-2">
-              <button
-                type="button"
-                onClick={() => onUpdateConfig({ ...config, weekStartsOn: 1 })}
-                className={`p-2.5 rounded-xl text-xs font-medium border text-center transition cursor-pointer ${
-                  (config.weekStartsOn ?? 1) === 1
-                    ? 'bg-blue-600 border-blue-500 text-white font-bold shadow-sm'
-                    : 'bg-slate-950/60 border-slate-800 text-slate-400 hover:text-slate-200'
-                }`}
-              >
-                Monday (Default)
-              </button>
-              <button
-                type="button"
-                onClick={() => onUpdateConfig({ ...config, weekStartsOn: 0 })}
-                className={`p-2.5 rounded-xl text-xs font-medium border text-center transition cursor-pointer ${
-                  config.weekStartsOn === 0
-                    ? 'bg-blue-600 border-blue-500 text-white font-bold shadow-sm'
-                    : 'bg-slate-950/60 border-slate-800 text-slate-400 hover:text-slate-200'
-                }`}
-              >
-                Sunday
-              </button>
+              {optionButton(
+                'Mon',
+                () => onUpdateConfig({ ...config, weekStartsOn: 1 }),
+                (config.weekStartsOn ?? 1) === 1,
+                'primary',
+              )}
+              {optionButton(
+                'Sun',
+                () => onUpdateConfig({ ...config, weekStartsOn: 0 }),
+                config.weekStartsOn === 0,
+                'blue',
+              )}
             </div>
           </div>
         </div>
 
         {/* Default Task Duration & Reminder Interval */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 border-t border-slate-800/80">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2 border-t border-border-default">
           <div>
-            <label className="text-xs font-semibold text-slate-300 block mb-1.5">
-              {t('defaultTaskDuration', lang)}
-            </label>
+            <label className="fieldlabel">{t('defaultTaskDuration', lang)}</label>
             <div className="flex gap-1.5">
-              {[15, 25, 30, 45, 60].map(mins => (
-                <button
-                  key={mins}
-                  type="button"
-                  onClick={() => onUpdateConfig({ ...config, defaultTaskDuration: mins })}
-                  className={`flex-1 py-1.5 rounded-lg text-xs font-mono font-medium border transition cursor-pointer text-center ${
-                    (config.defaultTaskDuration || 30) === mins
-                      ? 'bg-blue-600 border-blue-500 text-white font-bold'
-                      : 'bg-slate-950 border-slate-800 text-slate-400 hover:text-slate-200'
-                  }`}
-                >
-                  {mins}m
-                </button>
+              {[15, 25, 30, 45, 60].map((mins) => (
+                optionButton(
+                  `${mins}m`,
+                  () => onUpdateConfig({ ...config, defaultTaskDuration: mins }),
+                  (config.defaultTaskDuration || 30) === mins,
+                  'primary',
+                )
               ))}
             </div>
           </div>
 
           <div>
-            <label className="text-xs font-semibold text-slate-300 block mb-1.5">
-              {t('defaultReminderInterval', lang)}
-            </label>
+            <label className="fieldlabel">{t('defaultReminderInterval', lang)}</label>
             <div className="flex gap-1.5">
               {[
                 { val: 0, label: '0m' },
                 { val: 5, label: '5m' },
                 { val: 10, label: '10m' },
                 { val: 15, label: '15m' },
-              ].map(item => (
-                <button
-                  key={item.val}
-                  type="button"
-                  onClick={() => onUpdateConfig({ ...config, defaultReminderMinutes: item.val })}
-                  className={`flex-1 py-1.5 rounded-lg text-xs font-mono font-medium border transition cursor-pointer text-center ${
-                    (config.defaultReminderMinutes ?? 10) === item.val
-                      ? 'bg-blue-600 border-blue-500 text-white font-bold'
-                      : 'bg-slate-950 border-slate-800 text-slate-400 hover:text-slate-200'
-                  }`}
-                >
-                  {item.label}
-                </button>
+              ].map((item) => (
+                optionButton(
+                  item.label,
+                  () => onUpdateConfig({ ...config, defaultReminderMinutes: item.val }),
+                  (config.defaultReminderMinutes ?? 10) === item.val,
+                  'blue',
+                )
               ))}
             </div>
           </div>
         </div>
 
         {/* Focus & Break Durations */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 border-t border-slate-800/80">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2 border-t border-border-default">
           <div>
-            <label className="text-xs font-semibold text-slate-300 block mb-1.5">
-              {t('defaultFocusDuration', lang)}
-            </label>
+            <label className="fieldlabel">{t('defaultFocusDuration', lang)}</label>
             <div className="flex gap-1.5">
-              {[20, 25, 30, 45, 50].map(mins => (
-                <button
-                  key={mins}
-                  type="button"
-                  onClick={() => onUpdateConfig({ ...config, defaultFocusDuration: mins })}
-                  className={`flex-1 py-1.5 rounded-lg text-xs font-mono font-medium border transition cursor-pointer text-center ${
-                    (config.defaultFocusDuration || 25) === mins
-                      ? 'bg-indigo-600 border-indigo-500 text-white font-bold'
-                      : 'bg-slate-950 border-slate-800 text-slate-400 hover:text-slate-200'
-                  }`}
-                >
-                  {mins}m
-                </button>
+              {[20, 25, 30, 45, 50].map((mins) => (
+                optionButton(
+                  `${mins}m`,
+                  () => onUpdateConfig({ ...config, defaultFocusDuration: mins }),
+                  (config.defaultFocusDuration || 25) === mins,
+                  'indigo',
+                )
               ))}
             </div>
           </div>
 
           <div>
-            <label className="text-xs font-semibold text-slate-300 block mb-1.5">
-              {t('defaultBreakDuration', lang)}
-            </label>
+            <label className="fieldlabel">{t('defaultBreakDuration', lang)}</label>
             <div className="flex gap-1.5">
-              {[5, 10, 15, 20].map(mins => (
-                <button
-                  key={mins}
-                  type="button"
-                  onClick={() => onUpdateConfig({ ...config, defaultBreakDuration: mins })}
-                  className={`flex-1 py-1.5 rounded-lg text-xs font-mono font-medium border transition cursor-pointer text-center ${
-                    (config.defaultBreakDuration || 5) === mins
-                      ? 'bg-emerald-600 border-emerald-500 text-white font-bold'
-                      : 'bg-slate-950 border-slate-800 text-slate-400 hover:text-slate-200'
-                  }`}
-                >
-                  {mins}m
-                </button>
+              {[5, 10, 15, 20].map((mins) => (
+                optionButton(
+                  `${mins}m`,
+                  () => onUpdateConfig({ ...config, defaultBreakDuration: mins }),
+                  (config.defaultBreakDuration || 5) === mins,
+                  'emerald',
+                )
               ))}
             </div>
           </div>
         </div>
 
         {/* Daily & Weekly Productivity Target Goals */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 border-t border-slate-800/80">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2 border-t border-border-default">
           <div>
-            <label className="text-xs font-semibold text-slate-300 block mb-1">
-              Daily Focus Target (Hours)
+            <label className="fieldlabel flex items-center gap-1">
+              <span>{t('dailyFocusTarget', lang)}</span>
+              <span className="text-[10px] text-text-muted font-normal">({t('hours', lang)})</span>
             </label>
             <input
               type="number"
@@ -398,13 +375,14 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
               step={0.5}
               value={Math.round(((config.dailyGoalMinutes || 240) / 60) * 10) / 10}
               onChange={(e) => onUpdateConfig({ ...config, dailyGoalMinutes: Math.round(Math.max(1, Number(e.target.value)) * 60) })}
-              className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-slate-200 font-mono text-xs"
+              className="fieldinput text-xs font-mono"
             />
           </div>
 
           <div>
-            <label className="text-xs font-semibold text-slate-300 block mb-1">
-              Weekly Focus Target (Hours)
+            <label className="fieldlabel flex items-center gap-1">
+              <span>{t('weeklyFocusTarget', lang)}</span>
+              <span className="text-[10px] text-text-muted font-normal">({t('hours', lang)})</span>
             </label>
             <input
               type="number"
@@ -413,114 +391,74 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
               step={1}
               value={Math.round(((config.weeklyGoalMinutes || 1200) / 60) * 10) / 10}
               onChange={(e) => onUpdateConfig({ ...config, weeklyGoalMinutes: Math.round(Math.max(5, Number(e.target.value)) * 60) })}
-              className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-slate-200 font-mono text-xs"
+              className="fieldinput text-xs font-mono"
             />
           </div>
         </div>
       </div>
 
-      {/* SECTION 2: LANGUAGE SELECTOR (English & Amharic) */}
-      <div className="bg-slate-900/90 border border-slate-800 rounded-2xl p-5 space-y-3.5">
-        <div className="flex items-center gap-2 pb-2.5 border-b border-slate-800">
-          <Languages className="w-4 h-4 text-blue-400" />
-          <h3 className="text-sm font-bold text-slate-100">
-            {t('languageSection', lang)}
-          </h3>
-        </div>
+      {/* SECTION 2: LANGUAGE SELECTOR */}
+      <div className="page-section space-y-3">
+        {sectionHeader(Languages, t('languageSection', lang), t('selectLanguage', lang))}
 
-        <p className="text-xs text-slate-400">
-          {t('selectLanguage', lang)}
-        </p>
-
-        <div className="grid grid-cols-2 gap-3 pt-1">
+        <div className="grid grid-cols-2 gap-3">
           <button
             type="button"
             onClick={() => handleLanguageChange('en')}
-            className={`p-3.5 rounded-xl border text-left transition cursor-pointer flex items-center justify-between ${
+            className={`flex items-center justify-between p-3 rounded-lg text-left border transition cursor-pointer ${
               lang === 'en'
-                ? 'bg-blue-950/60 border-blue-500 text-white shadow-sm'
-                : 'bg-slate-950/60 border-slate-800 text-slate-400 hover:text-slate-200 hover:border-slate-700'
+                ? 'btnprimary'
+                : 'btnghost'
             }`}
           >
             <div>
               <span className="text-xs font-bold block">English</span>
-              <span className="text-[10px] text-slate-400">Default interface</span>
+              <span className="text-[10px] text-text-muted">Default interface</span>
             </div>
-            {lang === 'en' && <Check className="w-4 h-4 text-blue-400" />}
+            {lang === 'en' && <Check className="w-4 h-4" />}
           </button>
 
           <button
             type="button"
             onClick={() => handleLanguageChange('am')}
-            className={`p-3.5 rounded-xl border text-left transition cursor-pointer flex items-center justify-between ${
+            className={`flex items-center justify-between p-3 rounded-lg text-left border transition cursor-pointer ${
               lang === 'am'
-                ? 'bg-blue-950/60 border-blue-500 text-white shadow-sm'
-                : 'bg-slate-950/60 border-slate-800 text-slate-400 hover:text-slate-200 hover:border-slate-700'
+                ? 'btnprimary'
+                : 'btnghost'
             }`}
           >
             <div>
               <span className="text-xs font-bold block">አማርኛ (Amharic)</span>
-              <span className="text-[10px] text-slate-400">የኢትዮጵያ ቋንቋ</span>
+              <span className="text-[10px] text-text-muted">{t('amharicDesc', lang)}</span>
             </div>
-            {lang === 'am' && <Check className="w-4 h-4 text-blue-400" />}
+            {lang === 'am' && <Check className="w-4 h-4" />}
           </button>
         </div>
       </div>
 
-      {/* SECTION 3: ALARM-STYLE SOUND & VIBRATION OPTIONS */}
-      <div className="bg-slate-900/90 border border-slate-800 rounded-2xl p-5 space-y-4">
-        <div className="flex items-center justify-between pb-3 border-b border-slate-800">
-          <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-amber-500/20 text-amber-400 border border-amber-500/30 flex items-center justify-center shrink-0">
-              <Volume2 className="w-4 h-4 text-amber-400" />
-            </div>
-            <div>
-              <h3 className="text-sm font-bold text-slate-100">
-                {t('alarmStyleSoundSection', lang)}
-              </h3>
-              <p className="text-[11px] text-slate-400">
-                {t('alarmStyleSoundDesc', lang)}
-              </p>
-            </div>
-          </div>
-          <button
-            type="button"
-            onClick={handleTestAlarm}
-            className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-amber-400 border border-slate-700 rounded-xl text-xs font-semibold transition cursor-pointer active:scale-95 shrink-0"
-            title="Preview alarm sound melody"
-          >
-            <Play className={`w-3.5 h-3.5 ${isPlayingTest ? 'animate-spin' : ''}`} />
-            <span>{t('testSound', lang)}</span>
-          </button>
-        </div>
+      {/* SECTION 3: ALARM & SOUND OPTIONS */}
+      <div className="page-section space-y-4">
+        {sectionHeader(Volume2, t('alarmSoundSection', lang), t('alarmSoundDesc', lang))}
 
         {/* Master Alarm Toggle */}
-        <label className="flex items-center justify-between cursor-pointer p-3 rounded-xl bg-slate-950/40 border border-slate-800/80">
+        <label className="flex items-center justify-between cursor-pointer p-3 rounded-lg bg-surface-elevated border border-border-default">
           <div>
-            <span className="text-xs font-semibold text-slate-200 block">
-              {t('timerAlarmToggle', lang)}
-            </span>
-            <span className="text-[11px] text-slate-400">
-              {t('timerAlarmToggleDesc', lang)}
-            </span>
+            <span className="text-xs font-semibold text-text-primary block">{t('timerAlarmToggle', lang)}</span>
+            <span className="text-[10px] text-text-muted">{t('timerAlarmToggleDesc', lang)}</span>
           </div>
           <input
             type="checkbox"
             checked={settings.timerAlarmEnabled}
-            onChange={(e) => {
-              onUpdateSettings({ ...settings, timerAlarmEnabled: e.target.checked });
-            }}
-            className="w-4 h-4 text-blue-600 bg-slate-950 border-slate-700 rounded focus:ring-blue-500"
+            onChange={(e) => onUpdateSettings({ ...settings, timerAlarmEnabled: e.target.checked })}
+            className="toggleswitch peer"
           />
         </label>
 
         {settings.timerAlarmEnabled && (
-          <div className="space-y-4 pt-1">
-            {/* 1. Alarm Sound Melody Style Selector */}
+          <div className="space-y-3 pt-1">
+            {/* Alarm Sound Melody Selector */}
             <div>
-              <label className="text-xs font-semibold text-slate-300 block mb-2">
-                {t('alarmSoundLabel', lang)}
-              </label>
+              <label className="fieldlabel">{t('alarmSoundLabel', lang)}</label>
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                 {[
                   { id: 'bell', label: t('alarmSoundBell', lang) },
@@ -535,16 +473,16 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
                       playAlarmSound(sound.id as AlarmSound, settings.alarmVolume);
                       onUpdateSettings({ ...settings, timerAlarmSound: sound.id as AlarmSound });
                     }}
-                    className={`py-2.5 px-3 rounded-xl text-xs font-medium transition cursor-pointer text-left border ${
+                    className={`py-2.5 px-3 rounded-lg text-xs font-medium text-left transition cursor-pointer border ${
                       settings.timerAlarmSound === sound.id
-                        ? 'bg-amber-500/15 border-amber-500/80 text-amber-300 font-bold shadow-sm ring-1 ring-amber-500/30'
-                        : 'bg-slate-950/60 border-slate-800 text-slate-400 hover:text-slate-200 hover:border-slate-700'
+                        ? 'btnsuccess'
+                        : 'btnghost text-text-muted hover:text-text-primary hover:bg-surface-hover'
                     }`}
                   >
                     <div className="flex items-center justify-between">
                       <span className="text-xs block font-semibold">{sound.label}</span>
                       {settings.timerAlarmSound === sound.id && (
-                        <Check className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+                        <Check className="w-3.5 h-3.5 shrink-0" />
                       )}
                     </div>
                   </button>
@@ -552,65 +490,50 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
               </div>
             </div>
 
-            {/* 2. Volume Level Slider & Quick Presets */}
-            <div className="bg-slate-950/40 border border-slate-800/80 rounded-xl p-3.5 space-y-2.5">
-              <div className="flex items-center justify-between text-xs text-slate-200">
+            {/* Volume Slider */}
+            <div className="bg-surface-elevated/50 rounded-lg border border-border-default p-3 space-y-2">
+              <div className="flex items-center justify-between text-xs text-text-muted">
                 <span className="font-semibold flex items-center gap-1.5">
-                  <Volume2 className="w-3.5 h-3.5 text-amber-400" />
+                  <Volume2 className="w-3.5 h-3.5 text-blue-400" />
                   {t('alarmVolumeLabel', lang)}
                 </span>
-                <span className="font-mono text-amber-400 font-extrabold bg-amber-500/10 px-2 py-0.5 rounded border border-amber-500/20">
+                <span className="font-mono text-blue-400 font-extrabold bg-blue-500/10 px-2 py-0.5 rounded border border-blue-500/20">
                   {Math.round((settings.alarmVolume ?? 0.8) * 100)}%
                 </span>
               </div>
-              
               <input
                 type="range"
                 min={0.1}
                 max={1.0}
                 step={0.05}
                 value={settings.alarmVolume ?? 0.8}
-                onChange={(e) => {
-                  onUpdateSettings({ ...settings, alarmVolume: Number(e.target.value) });
-                }}
-                className="w-full h-2 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-amber-500"
+                onChange={(e) => onUpdateSettings({ ...settings, alarmVolume: Number(e.target.value) })}
+                className="w-full h-1.5 bg-surface-hover rounded-lg cursor-pointer accent-blue-500"
               />
-
               {/* Volume Preset Chips */}
-              <div className="flex items-center justify-between gap-1.5 pt-1 text-[11px]">
+              <div className="flex items-center justify-between gap-1.5 pt-1 text-[10px]">
                 {[0.25, 0.5, 0.8, 1.0].map((vol) => (
-                  <button
-                    key={vol}
-                    type="button"
-                    onClick={() => {
+                  optionButton(
+                    `${Math.round(vol * 100)}%`,
+                    () => {
                       onUpdateSettings({ ...settings, alarmVolume: vol });
                       playAlarmSound(settings.timerAlarmSound, vol);
-                    }}
-                    className={`flex-1 py-1 px-2 rounded-lg text-center font-mono font-medium transition cursor-pointer border ${
-                      Math.abs((settings.alarmVolume ?? 0.8) - vol) < 0.04
-                        ? 'bg-amber-500/20 border-amber-500 text-amber-300 font-bold'
-                        : 'bg-slate-900 border-slate-800 text-slate-400 hover:text-slate-200'
-                    }`}
-                  >
-                    {Math.round(vol * 100)}%
-                  </button>
+                    },
+                    Math.abs((settings.alarmVolume ?? 0.8) - vol) < 0.04,
+                    'blue',
+                  )
                 ))}
               </div>
             </div>
 
-            {/* 3. Alarm Repeat Interval Configuration */}
+            {/* Alarm Repeat Interval */}
             <div>
-              <div className="mb-2">
-                <label className="text-xs font-semibold text-slate-200 block">
-                  {t('alarmRepeatIntervalLabel', lang)}
-                </label>
-                <p className="text-[11px] text-slate-400">
-                  {lang === 'am'
-                    ? 'ደወሉን እስኪያሸልቡ ወይም እስኪያሰናብቱ ድረስ የሚደወልበት ድግግሞሽ'
-                    : 'Choose how often the alarm repeats until you snooze or dismiss'}
-                </p>
-              </div>
-
+              <label className="fieldlabel">{t('alarmRepeatIntervalLabel', lang)}</label>
+              <p className="text-[10px] text-text-muted mb-2">
+                {lang === 'am'
+                  ? t('alarmRepeatIntervalDescAm', lang)
+                  : t('alarmRepeatIntervalDescEn', lang)}
+              </p>
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                 {[
                   { value: 0, label: t('repeatSustained', lang), isSustained: true },
@@ -625,23 +548,19 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
                     <button
                       key={opt.value}
                       type="button"
-                      onClick={() => {
-                        onUpdateSettings({ ...settings, alarmRepeatIntervalSeconds: opt.value });
-                      }}
-                      className={`p-2.5 rounded-xl text-xs font-medium text-left transition cursor-pointer border flex flex-col justify-between ${
+                      onClick={() => onUpdateSettings({ ...settings, alarmRepeatIntervalSeconds: opt.value })}
+                      className={`p-2 rounded-lg text-xs font-medium text-left border transition cursor-pointer flex flex-col justify-between gap-1 ${
                         isSelected
-                          ? 'bg-amber-500/15 border-amber-500/80 text-amber-300 font-bold shadow-sm ring-1 ring-amber-500/30'
-                          : 'bg-slate-950/60 border-slate-800 text-slate-400 hover:text-slate-200 hover:border-slate-700'
+                          ? 'btnsuccess text-white'
+                          : 'btnghost text-text-muted hover:text-text-primary hover:bg-surface-hover'
                       }`}
                     >
                       <div className="flex items-center justify-between">
-                        <span className="truncate">{opt.label}</span>
-                        {isSelected && <Check className="w-3.5 h-3.5 text-amber-400 shrink-0 ml-1" />}
+                        <span className="truncate text-[10px]">{opt.label}</span>
+                        {isSelected && <Check className="w-3 h-3 shrink-0 ml-1" />}
                       </div>
                       {opt.isSustained && (
-                        <span className="text-[9px] text-amber-400/90 font-mono font-bold mt-1">
-                          Sustained
-                        </span>
+                        <span className="text-[9px] text-blue-300 font-mono font-bold mt-0.5">Sustained</span>
                       )}
                     </button>
                   );
@@ -649,213 +568,187 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
               </div>
             </div>
 
-            {/* 4. 60-Second Warning Chime Toggle */}
-            <div className="p-3.5 rounded-xl bg-slate-950/40 border border-slate-800/80 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            {/* 1-Minute Warning Chime */}
+            <div className="p-3 rounded-lg border border-border-default bg-surface-elevated/50 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
               <div className="flex-1">
-                <span className="text-xs font-semibold text-slate-200 block flex items-center gap-1.5">
-                  <Bell className="w-3.5 h-3.5 text-amber-400" />
+                <span className="text-xs font-semibold text-text-primary block flex items-center gap-1.5">
+                  <Bell className="w-3.5 h-3.5 text-blue-400" />
                   {t('oneMinuteWarningToggle', lang)}
                 </span>
-                <span className="text-[11px] text-slate-400 mt-0.5 block leading-relaxed">
+                <span className="text-[10px] text-text-muted mt-0.5 block leading-relaxed">
                   {t('oneMinuteWarningDesc', lang)}
                 </span>
               </div>
-              <div className="flex items-center gap-2.5 self-end sm:self-auto">
+              <div className="flex items-center gap-2 self-end sm:self-auto">
                 <button
                   type="button"
                   onClick={handleTestWarning}
-                  className="px-2.5 py-1 bg-slate-900 hover:bg-slate-800 text-amber-400 border border-slate-800 rounded-lg text-[11px] font-medium transition cursor-pointer flex items-center gap-1 active:scale-95"
-                  title="Test 60-second warning chime"
+                  className="px-2 py-1 rounded-lg bg-surface-hover border border-border-default text-text-secondary text-[10px] font-medium transition cursor-pointer flex items-center gap-1 active:scale-[0.97]"
+                  title={t('testWarning', lang)}
                 >
                   <Play className={`w-3 h-3 ${isPlayingWarningTest ? 'animate-spin' : ''}`} />
-                  <span>Test Chime</span>
+                  <span>{t('testSound', lang)}</span>
                 </button>
                 <input
                   type="checkbox"
                   checked={settings.oneMinuteWarningEnabled !== false}
-                  onChange={(e) => {
-                    onUpdateSettings({ ...settings, oneMinuteWarningEnabled: e.target.checked });
-                  }}
-                  className="w-4 h-4 text-blue-600 bg-slate-950 border-slate-700 rounded focus:ring-blue-500"
+                  onChange={(e) => onUpdateSettings({ ...settings, oneMinuteWarningEnabled: e.target.checked })}
+                  className="toggleswitch peer"
                 />
               </div>
             </div>
+
+            {/* Vibration Alerts */}
+            <div className="p-3 rounded-lg border border-border-default bg-surface-elevated/50 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+              <div className="flex-1">
+                <span className="text-xs font-semibold text-text-primary block flex items-center gap-1.5">
+                  <Vibrate className="w-3.5 h-3.5 text-blue-400" />
+                  {t('vibrationLabel', lang)}
+                </span>
+                <span className="text-[10px] text-text-muted mt-0.5 block leading-relaxed">
+                  {t('vibrationDesc', lang)}
+                </span>
+              </div>
+              <div className="flex items-center gap-2 self-end sm:self-auto">
+                {typeof window !== 'undefined' && 'vibrate' in navigator && (
+                  <button
+                    type="button"
+                    onClick={handleTestVibration}
+                    className="px-2 py-1 rounded-lg bg-surface-hover border border-border-default text-text-secondary text-[10px] font-medium transition cursor-pointer flex items-center gap-1 active:scale-[0.97]"
+                    title={t('testVibration', lang)}
+                  >
+                    <Vibrate className={`w-3 h-3 ${isTestingVibration ? 'animate-bounce' : ''}`} />
+                    <span>{t('testPulse', lang)}</span>
+                  </button>
+                )}
+                <input
+                  type="checkbox"
+                  checked={settings.vibrateEnabled !== false}
+                  onChange={(e) => onUpdateSettings({ ...settings, vibrateEnabled: e.target.checked })}
+                  className="toggleswitch peer"
+                />
+              </div>
+            </div>
+
+            {/* Task Completion Sound */}
+            <label className="flex items-center justify-between cursor-pointer p-3 border-t border-border-default">
+              <div>
+                <span className="text-xs font-semibold text-text-primary block">{t('taskCompletionSoundLabel', lang)}</span>
+                <span className="text-[10px] text-text-muted">{t('taskCompletionSoundDesc', lang)}</span>
+              </div>
+              <input
+                type="checkbox"
+                checked={settings.taskCompletionSound}
+                onChange={(e) => onUpdateSettings({ ...settings, taskCompletionSound: e.target.checked })}
+                className="toggleswitch peer"
+              />
+            </label>
           </div>
         )}
-
-        {/* 5. Vibration Alerts Toggle & Test */}
-        <div className="p-3.5 rounded-xl bg-slate-950/40 border border-slate-800/80 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-          <div className="flex-1">
-            <span className="text-xs font-semibold text-slate-200 block flex items-center gap-1.5">
-              <Vibrate className="w-3.5 h-3.5 text-blue-400" />
-              {t('vibrationLabel', lang)}
-            </span>
-            <span className="text-[11px] text-slate-400 mt-0.5 block leading-relaxed">
-              {t('vibrationDesc', lang)}
-            </span>
-          </div>
-          <div className="flex items-center gap-2.5 self-end sm:self-auto">
-            {typeof window !== 'undefined' && 'vibrate' in navigator && (
-              <button
-                type="button"
-                onClick={handleTestVibration}
-                className="px-2.5 py-1 bg-slate-900 hover:bg-slate-800 text-blue-400 border border-slate-800 rounded-lg text-[11px] font-medium transition cursor-pointer flex items-center gap-1 active:scale-95"
-                title="Test device vibration pulse"
-              >
-                <Vibrate className={`w-3 h-3 ${isTestingVibration ? 'animate-bounce' : ''}`} />
-                <span>Test Pulse</span>
-              </button>
-            )}
-            <input
-              type="checkbox"
-              checked={settings.vibrateEnabled !== false}
-              onChange={(e) => {
-                onUpdateSettings({ ...settings, vibrateEnabled: e.target.checked });
-              }}
-              className="w-4 h-4 text-blue-600 bg-slate-950 border-slate-700 rounded focus:ring-blue-500"
-            />
-          </div>
-        </div>
-
-        {/* Task Completion Sound */}
-        <label className="flex items-center justify-between cursor-pointer pt-3 border-t border-slate-800/80">
-          <div>
-            <span className="text-xs font-semibold text-slate-200 block">
-              {t('taskCompletionSoundLabel', lang)}
-            </span>
-            <span className="text-[11px] text-slate-400">
-              {t('taskCompletionSoundDesc', lang)}
-            </span>
-          </div>
-          <input
-            type="checkbox"
-            checked={settings.taskCompletionSound}
-            onChange={(e) => {
-              onUpdateSettings({ ...settings, taskCompletionSound: e.target.checked });
-            }}
-            className="w-4 h-4 text-blue-600 bg-slate-950 border-slate-700 rounded focus:ring-blue-500"
-          />
-        </label>
       </div>
 
       {/* SECTION 4: MOBILE & BROWSER NOTIFICATIONS */}
-      <div className="bg-slate-900/90 border border-slate-800 rounded-2xl p-5 space-y-4">
-        <div className="flex items-center justify-between pb-3 border-b border-slate-800">
+      <div className="page-section space-y-4">
+        {sectionHeader(Bell, t('notificationSection', lang), t('notificationSectionDesc', lang))}
+
+        <div className="flex items-center justify-between pb-3 border-b border-border-default">
           <div className="flex items-center gap-2">
             <Bell className="w-4 h-4 text-blue-400" />
-            <h3 className="text-sm font-bold text-slate-100">
-              {t('notificationSection', lang)}
-            </h3>
+            <span className="text-xs font-semibold text-text-muted uppercase tracking-wider">{t('permissionStatus', lang)}</span>
           </div>
-          <span className={`text-[11px] font-mono px-2 py-0.5 rounded-full uppercase font-bold ${
+          <span className={`text-[10px] font-mono px-2 py-0.5 rounded-full uppercase font-bold border ${
             notificationState.permission === 'granted'
-              ? 'bg-emerald-950 text-emerald-400 border border-emerald-800/80'
+              ? 'bg-emerald-950/20 text-emerald-400 border-emerald-500/40'
               : notificationState.permission === 'denied'
-              ? 'bg-rose-950 text-rose-400 border border-rose-800/80'
-              : 'bg-slate-800 text-slate-400'
+              ? 'bg-rose-950/20 text-rose-400 border-rose-500/40'
+              : 'bg-surface-elevated text-text-muted border-border-default'
           }`}>
             {notificationState.permission}
           </span>
         </div>
 
-        <p className="text-xs text-slate-400 leading-relaxed">
-          {t('notificationSectionDesc', lang)}
-        </p>
+        <p className="text-[10px] text-text-muted leading-relaxed">{t('notificationSectionDescDetail', lang)}</p>
 
         {notificationState.permission !== 'granted' ? (
           <button
             type="button"
             onClick={handleRequestPermission}
-            className="w-full py-2.5 px-4 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-xs font-semibold flex items-center justify-center gap-2 transition active:scale-95 cursor-pointer shadow-sm"
+            className="w-full py-2.5 px-4 btnprimary text-sm inline-flex items-center justify-center gap-2"
           >
             <Smartphone className="w-4 h-4" />
             <span>{t('enableNotifications', lang)}</span>
           </button>
         ) : (
-          <div className="p-3 bg-emerald-950/40 border border-emerald-900/50 rounded-xl flex items-center gap-2 text-xs text-emerald-300">
+          <div className="p-3 bg-emerald-950/20 border border-emerald-500/40 rounded-xl flex items-center gap-2 text-xs text-emerald-300">
             <Check className="w-4 h-4 text-emerald-400 shrink-0" />
             <span>{t('notificationsGranted', lang)}</span>
           </div>
         )}
 
         {/* Persistent Task Reminders with Quiet Hours */}
-        <div className="pt-2 border-t border-slate-800/80 space-y-3">
-          <label className="flex items-center justify-between cursor-pointer">
+        <div className="pt-2 border-t border-border-default space-y-3">
+          <label className="flex items-center justify-between cursor-pointer p-2 rounded-lg hover:bg-surface-hover transition cursor-pointer">
             <div>
-              <span className="text-xs font-semibold text-slate-200 block">
-                {t('persistentRemindersToggle', lang)}
-              </span>
-              <span className="text-[11px] text-slate-400">
-                {t('persistentRemindersDesc', lang)}
-              </span>
+              <span className="text-xs font-semibold text-text-primary block">{t('persistentRemindersToggle', lang)}</span>
+              <span className="text-[10px] text-text-muted">{t('persistentRemindersDesc', lang)}</span>
             </div>
             <input
               type="checkbox"
               checked={settings.persistentReminders}
-              onChange={(e) => {
-                onUpdateSettings({ ...settings, persistentReminders: e.target.checked });
-              }}
-              className="w-4 h-4 text-blue-600 bg-slate-950 border-slate-700 rounded focus:ring-blue-500"
+              onChange={(e) => onUpdateSettings({ ...settings, persistentReminders: e.target.checked })}
+              className="toggleswitch peer"
             />
           </label>
 
           {settings.persistentReminders && (
-            <div className="p-3.5 bg-slate-950/80 border border-slate-800 rounded-xl space-y-3">
+            <div className="p-3 rounded-lg border border-border-default bg-surface-elevated/50 space-y-3">
               <div>
-                <label className="text-[11px] text-slate-400 block mb-1">
-                  {t('reminderIntervalLabel', lang)}
-                </label>
+                <label className="text-[10px] text-text-muted block mb-1">{t('reminderIntervalLabel', lang)}</label>
                 <div className="flex gap-2">
                   {[15, 30, 60].map((mins) => (
-                    <button
-                      key={mins}
-                      type="button"
-                      onClick={() => onUpdateSettings({ ...settings, reminderIntervalMinutes: mins })}
-                      className={`px-3 py-1.5 rounded-lg text-xs font-mono font-medium transition cursor-pointer ${
-                        settings.reminderIntervalMinutes === mins
-                          ? 'bg-blue-600 text-white font-bold'
-                          : 'bg-slate-900 text-slate-400 border border-slate-800 hover:text-slate-200'
-                      }`}
-                    >
-                      {mins}m
-                    </button>
+                    optionButton(
+                      `${mins}m`,
+                      () => onUpdateSettings({ ...settings, reminderIntervalMinutes: mins }),
+                      settings.reminderIntervalMinutes === mins,
+                      'blue',
+                    )
                   ))}
                 </div>
               </div>
 
               {/* Quiet Hours */}
-              <div className="pt-2 border-t border-slate-800/80">
-                <label className="flex items-center justify-between cursor-pointer mb-2">
-                  <span className="text-xs font-medium text-slate-300 flex items-center gap-1.5">
+              <div className="pt-2 border-t border-border-default">
+                <label className="flex items-center justify-between cursor-pointer mb-2 p-1 rounded-lg hover:bg-surface-hover transition cursor-pointer">
+                  <span className="text-xs font-medium text-text-secondary flex items-center gap-1.5">
                     <Moon className="w-3.5 h-3.5 text-indigo-400" />
-                    <span>{t('quietHoursLabel', lang)}</span>
+                    {t('quietHoursLabel', lang)}
                   </span>
                   <input
                     type="checkbox"
                     checked={settings.quietHoursEnabled}
                     onChange={(e) => onUpdateSettings({ ...settings, quietHoursEnabled: e.target.checked })}
-                    className="w-3.5 h-3.5 text-blue-600 bg-slate-900 border-slate-700 rounded"
+                    className="toggleswitch peer"
                   />
                 </label>
 
                 {settings.quietHoursEnabled && (
-                  <div className="grid grid-cols-2 gap-2 text-xs">
+                  <div className="grid grid-cols-2 gap-2 text-[10px]">
                     <div>
-                      <span className="text-[10px] text-slate-500 block mb-1">Quiet From</span>
+                      <span className="text-[9px] text-text-muted block mb-1">{t('quietFrom', lang)}</span>
                       <input
                         type="time"
                         value={settings.quietHoursStart}
                         onChange={(e) => onUpdateSettings({ ...settings, quietHoursStart: e.target.value })}
-                        className="w-full bg-slate-900 border border-slate-700 rounded-lg px-2 py-1 text-slate-200 font-mono text-xs"
+                        className="w-full fieldinput text-xs font-mono"
                       />
                     </div>
                     <div>
-                      <span className="text-[10px] text-slate-500 block mb-1">Quiet Until</span>
+                      <span className="text-[9px] text-text-muted block mb-1">{t('quietUntil', lang)}</span>
                       <input
                         type="time"
                         value={settings.quietHoursEnd}
                         onChange={(e) => onUpdateSettings({ ...settings, quietHoursEnd: e.target.value })}
-                        className="w-full bg-slate-900 border border-slate-700 rounded-lg px-2 py-1 text-slate-200 font-mono text-xs"
+                        className="w-full fieldinput text-xs font-mono"
                       />
                     </div>
                   </div>
@@ -867,47 +760,42 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
       </div>
 
       {/* SECTION 5: WORKDAY PREFERENCES */}
-      <div className="bg-slate-900/90 border border-slate-800 rounded-2xl p-5 space-y-4">
-        <div className="flex items-center gap-2 pb-3 border-b border-slate-800">
-          <Clock className="w-4 h-4 text-emerald-400" />
-          <h3 className="text-sm font-bold text-slate-100">
-            {t('workdayPreferences', lang)}
-          </h3>
-        </div>
+      <div className="page-section space-y-4">
+        {sectionHeader(Clock, t('workdayPreferences', lang), t('workdayPrefsDesc', lang))}
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
           <div>
-            <label className="text-slate-400 block mb-1">{t('workdayStarts', lang)}</label>
+            <label className="fieldlabel">{t('workdayStarts', lang)}</label>
             <input
               type="time"
               value={config.workStart}
               onChange={(e) => onUpdateConfig({ ...config, workStart: e.target.value })}
-              className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-slate-200 font-mono"
+              className="fieldinput text-xs font-mono"
             />
           </div>
 
           <div>
-            <label className="text-slate-400 block mb-1">{t('workdayEnds', lang)}</label>
+            <label className="fieldlabel">{t('workdayEnds', lang)}</label>
             <input
               type="time"
               value={config.workEnd}
               onChange={(e) => onUpdateConfig({ ...config, workEnd: e.target.value })}
-              className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-slate-200 font-mono"
+              className="fieldinput text-xs font-mono"
             />
           </div>
 
           <div>
-            <label className="text-slate-400 block mb-1">{t('lunchBreakStart', lang)}</label>
+            <label className="fieldlabel">{t('lunchBreakStart', lang)}</label>
             <input
               type="time"
               value={config.lunchStart}
               onChange={(e) => onUpdateConfig({ ...config, lunchStart: e.target.value })}
-              className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-slate-200 font-mono"
+              className="fieldinput text-xs font-mono"
             />
           </div>
 
           <div>
-            <label className="text-slate-400 block mb-1">{t('lunchDurationMinutes', lang)}</label>
+            <label className="fieldlabel">{t('lunchDurationMinutes', lang)}</label>
             <input
               type="number"
               min={15}
@@ -915,33 +803,24 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
               step={5}
               value={config.lunchDuration}
               onChange={(e) => onUpdateConfig({ ...config, lunchDuration: Math.max(15, Number(e.target.value)) })}
-              className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-slate-200 font-mono"
+              className="fieldinput text-xs font-mono"
             />
           </div>
         </div>
       </div>
 
       {/* SECTION 6: DATA BACKUP, RESTORE & SYSTEM RESET */}
-      <div className="bg-slate-900/90 border border-slate-800 rounded-2xl p-5 space-y-4">
-        <div className="flex items-center gap-2 pb-3 border-b border-slate-800">
-          <ShieldCheck className="w-4 h-4 text-blue-400" />
-          <h3 className="text-sm font-bold text-slate-100">
-            {t('backupAndRestore', lang)}
-          </h3>
-        </div>
+      <div className="page-section space-y-4">
+        {sectionHeader(ShieldCheck, t('backupAndRestore', lang), t('personalPlanDataDesc', lang))}
 
-        <p className="text-xs text-slate-400 leading-relaxed">
-          {t('personalPlanDataDesc', lang)}
-        </p>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-1">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
           {/* Export Full JSON Backup */}
           <button
             type="button"
             onClick={handleExportFullBackup}
-            className="py-2.5 px-3 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 rounded-xl text-xs font-semibold flex items-center justify-center gap-2 transition cursor-pointer active:scale-95 shadow-sm"
+            className="py-2.5 px-3 btnsecondary text-[10px] inline-flex items-center justify-center gap-2"
           >
-            {copiedStatus ? <Check className="w-4 h-4 text-emerald-400" /> : <Download className="w-4 h-4 text-blue-400" />}
+            {copiedStatus ? <Check className="w-3 h-3 text-emerald-400" /> : <Download className="w-3 h-3 text-blue-400" />}
             <span>{copiedStatus ? t('exported', lang) : t('exportFullBackup', lang)}</span>
           </button>
 
@@ -949,57 +828,62 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
           <button
             type="button"
             onClick={() => fileInputRef.current?.click()}
-            className="py-2.5 px-3 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 rounded-xl text-xs font-semibold flex items-center justify-center gap-2 transition cursor-pointer active:scale-95 shadow-sm"
+            className="py-2.5 px-3 btnsecondary text-[10px] inline-flex items-center justify-center gap-2"
           >
-            <Upload className="w-4 h-4 text-emerald-400" />
+            <Upload className="w-3 h-3 text-emerald-400" />
             <span>{t('importBackup', lang)}</span>
           </button>
         </div>
 
-        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 pt-2 border-t border-slate-800/80">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 pt-2 border-t border-border-default">
           <a
             href="/plandroid-source.zip"
             download="plandroid-source.zip"
-            className="flex-1 py-2 px-3 bg-slate-950 hover:bg-slate-800 text-slate-300 border border-slate-800 rounded-xl text-xs font-semibold flex items-center justify-center gap-2 transition cursor-pointer"
+            className="flex-1 py-2 px-3 btnghost text-[10px] inline-flex items-center justify-center gap-2 border border-border-default text-text-muted hover:text-text-primary hover:bg-surface-hover"
             title="Download full project source code as a ZIP archive"
           >
-            <Download className="w-3.5 h-3.5 text-blue-400" />
-            <span>Project Source ZIP</span>
+            <Download className="w-3 h-3 text-blue-400" />
+            <span>{t('downloadSourceZip', lang)}</span>
           </a>
 
           <button
             type="button"
             onClick={() => setIsConfirmClearOpen(true)}
-            className="py-2 px-4 bg-slate-950 hover:bg-rose-950/40 text-slate-400 hover:text-rose-400 border border-slate-800 hover:border-rose-900/60 rounded-xl text-xs font-medium transition cursor-pointer flex items-center justify-center gap-2"
+            className="py-2 px-4 btnoutline text-[10px] inline-flex items-center justify-center gap-2 border-rose-500/40 text-rose-400 hover:bg-rose-900/30 hover:text-rose-300"
           >
-            <Trash2 className="w-4 h-4" />
+            <Trash2 className="w-3 h-3" />
             <span>{t('clearAllPlans', lang)} ({plansCount})</span>
           </button>
         </div>
 
         {/* Clear Confirmation Modal */}
         {isConfirmClearOpen && (
-          <div className="p-4 bg-rose-950/30 border border-rose-900/50 rounded-xl text-xs text-rose-300 space-y-2 animate-in fade-in">
-            <p className="font-semibold">{t('confirmClearTitle', lang)}</p>
-            <p className="text-[11px] text-rose-400">{t('confirmClearDesc', lang)}</p>
-            <div className="flex items-center gap-2 pt-1">
-              <button
-                type="button"
-                onClick={() => {
-                  onClearAllPlans();
-                  setIsConfirmClearOpen(false);
-                }}
-                className="px-3 py-1.5 bg-rose-600 hover:bg-rose-500 text-white rounded-lg font-semibold transition cursor-pointer active:scale-95"
-              >
-                {t('yesClearAll', lang)}
-              </button>
-              <button
-                type="button"
-                onClick={() => setIsConfirmClearOpen(false)}
-                className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg transition cursor-pointer"
-              >
-                {t('cancel', lang)}
-              </button>
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animatefadein duration-200">
+            <div className="w-full max-w-sm rounded-2xl border border-border-default bg-surface-panel p-6 shadow-xl">
+              <div className="flex items-center gap-2 mb-3">
+                <AlertCircle className="w-5 h-5 text-rose-400 shrink-0" />
+                <h3 className="text-sm font-bold text-text-primary">{t('confirmClearTitle', lang)}</h3>
+              </div>
+              <p className="text-[10px] text-text-secondary leading-relaxed mb-4">{t('confirmClearDesc', lang)}</p>
+              <div className="flex items-center gap-2 pt-1">
+                <button
+                  type="button"
+                  onClick={() => {
+                    onClearAllPlans();
+                    setIsConfirmClearOpen(false);
+                  }}
+                  className="flex-1 py-2 px-3 btndanger text-xs font-bold"
+                >
+                  {t('yesClearAll', lang)}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setIsConfirmClearOpen(false)}
+                  className="px-2 py-1 btnghost text-xs font-medium"
+                >
+                  {t('cancel', lang)}
+                </button>
+              </div>
             </div>
           </div>
         )}

@@ -390,7 +390,7 @@ export default function App() {
     );
   }, []);
 
-  // Delete plan
+  // Delete plan with confirmation
   const handleDeleteTask = useCallback((taskId: string) => {
     setTasks(prev => prev.filter(t => t.id !== taskId));
     setNotificationBannerMsg('Plan removed.');
@@ -597,20 +597,20 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans selection:bg-blue-600 selection:text-white">
+    <div className="min-h-screen bg-surface-base text-text-primary flex flex-col font-sans selection:bg-blue-600 selection:text-white">
       {/* Clean Top Navigation Bar */}
-      <header className="w-full bg-slate-900/95 border-b border-slate-800/80 sticky top-0 z-30 backdrop-blur-md">
-        <div className="max-w-4xl mx-auto px-2.5 sm:px-6 h-14 sm:h-15 flex items-center justify-between gap-1.5 sm:gap-3">
+      <header className="w-full bg-surface-panel/95 border-b border-border-default sticky top-0 z-30 backdrop-blur-md">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 h-14 sm:h-16 flex items-center justify-between gap-2 sm:gap-3">
           {/* Logo & Title */}
-          <div className="flex items-center gap-1.5 sm:gap-2.5 min-w-0 shrink-0">
-            <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center text-white font-bold shadow-md shadow-blue-600/20 shrink-0">
-              <Zap className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-white" />
+          <div className="flex items-center gap-2 sm:gap-3 min-w-0 shrink-0">
+            <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center text-white font-bold shadow-lg shadow-blue-500/20 shrink-0">
+              <Zap className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
             </div>
             <div className="min-w-0">
-              <div className="flex items-center gap-1.5 sm:gap-2">
-                <span className="font-bold text-[13px] sm:text-base text-slate-100 tracking-tight whitespace-nowrap">PlanDroid</span>
+              <div className="flex items-center gap-2">
+                <span className="font-bold text-base text-text-primary tracking-tight whitespace-nowrap">PlanDroid</span>
                 <span className="hidden sm:inline-flex text-[10px] font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-2 py-0.5 rounded-full items-center gap-1 whitespace-nowrap">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animateandroidpulse" />
                   {t('offline', lang)}
                 </span>
               </div>
@@ -618,27 +618,27 @@ export default function App() {
           </div>
 
           {/* Top Quick Actions */}
-          <div className="flex items-center gap-1 sm:gap-2 shrink-0">
+          <div className="flex items-center gap-2 shrink-0">
             {/* Streak Counter Badge */}
             <button
               type="button"
               onClick={() => setMainSection('analytics')}
-              className="hidden min-[350px]:flex px-1.5 sm:px-2.5 py-1.5 bg-amber-500/10 hover:bg-amber-500/20 text-amber-400 border border-amber-500/30 rounded-xl text-[11px] sm:text-xs font-bold transition cursor-pointer items-center gap-1 sm:gap-1.5 shadow-sm active:scale-95 shrink-0"
+              className="hidden sm:flex items-center gap-2 px-3 py-2 bg-amber-500/10 hover:bg-amber-500/20 text-amber-400 border border-amber-500/30 rounded-xl text-xs font-bold transition cursor-pointer items-center gap-2 shrink-0"
               title={`Productivity Streak: ${streakStats.currentStreak} consecutive days (Best: ${streakStats.longestStreak}d)`}
             >
-              <Flame className="w-3.5 h-3.5 fill-amber-400 text-amber-400 animate-pulse" />
-              <span className="font-mono text-[11px] sm:text-xs">{streakStats.currentStreak}d</span>
+              <Flame className="w-4 h-4 fill-amber-400 text-amber-400 animateandroidpulse" />
+              <span className="font-mono text-xs">{streakStats.currentStreak}d</span>
             </button>
 
             {/* Custom Categories & Tags Button */}
             <button
               type="button"
               onClick={() => setIsCategoryManagerOpen(true)}
-              className="p-1.5 sm:px-2.5 sm:py-1.5 bg-slate-800/80 hover:bg-slate-700/80 text-slate-200 border border-slate-700/80 rounded-xl text-xs font-medium transition cursor-pointer flex items-center gap-1.5 shadow-sm active:scale-95 shrink-0"
+              className="p-2 sm:px-3 sm:py-2 bg-surface-elevated hover:bg-surface-hover text-text-secondary border border-border-default rounded-xl text-xs font-medium transition cursor-pointer flex items-center gap-2 shadow-sm shrink-0"
               title="Manage Custom Categories & Tags"
               aria-label="Manage Custom Categories & Tags"
             >
-              <Tag className="w-3.5 h-3.5 text-blue-400" />
+              <Tag className="w-4 h-4 text-blue-400" />
               <span className="hidden sm:inline">Tags</span>
             </button>
 
@@ -646,11 +646,11 @@ export default function App() {
             <button
               type="button"
               onClick={() => setIsAIChatOpen(true)}
-              className="p-1.5 sm:px-2.5 sm:py-1.5 bg-indigo-600/20 hover:bg-indigo-600/30 text-indigo-300 border border-indigo-500/40 rounded-xl text-xs font-semibold transition cursor-pointer flex items-center gap-1.5 shadow-sm active:scale-95 shrink-0"
+              className="p-2 sm:px-3 sm:py-2 bg-indigo-600/20 hover:bg-indigo-600/30 text-indigo-300 border border-indigo-500/40 rounded-xl text-xs font-semibold transition cursor-pointer flex items-center gap-2 shadow-sm shrink-0"
               title="Open PlanDroid AI Productivity Coach"
               aria-label="Open PlanDroid AI Productivity Coach"
             >
-              <Sparkles className="w-3.5 h-3.5 text-indigo-400" />
+              <Sparkles className="w-4 h-4 text-indigo-400" />
               <span className="hidden sm:inline">AI Coach</span>
             </button>
 
@@ -658,11 +658,11 @@ export default function App() {
               <button
                 type="button"
                 onClick={handleTriggerRebalance}
-                className="p-1.5 sm:px-3 sm:py-1.5 bg-slate-800/80 hover:bg-slate-700/80 text-slate-200 border border-slate-700/80 rounded-xl text-xs font-medium transition cursor-pointer flex items-center gap-1.5 shrink-0"
+                className="p-2 sm:px-3 sm:py-2 bg-surface-elevated hover:bg-surface-hover text-text-secondary border border-border-default rounded-xl text-xs font-medium transition cursor-pointer flex items-center gap-2 shrink-0"
                 title="Auto-shift remaining plans forward from current time"
                 aria-label="Rebalance schedule"
               >
-                <RefreshCw className="w-3.5 h-3.5 text-emerald-400" />
+                <RefreshCw className="w-4 h-4 text-emerald-400" />
                 <span className="hidden sm:inline">{t('rebalance', lang)}</span>
               </button>
             )}
@@ -670,9 +670,9 @@ export default function App() {
             <button
               type="button"
               onClick={() => handleOpenCreate()}
-              className="px-2.5 sm:px-3 py-1.5 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-[11px] sm:text-xs font-semibold shadow-md shadow-blue-600/20 transition active:scale-95 cursor-pointer flex items-center gap-1 sm:gap-1.5 whitespace-nowrap shrink-0"
+              className="px-4 sm:px-5 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-sm font-semibold shadow-lg shadow-blue-600/20 transition active:scale-95 cursor-pointer flex items-center gap-2 whitespace-nowrap shrink-0"
             >
-              <Plus className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />
+              <Plus className="w-4 h-4 shrink-0" />
               <span>{t('createPlan', lang)}</span>
             </button>
           </div>
@@ -681,16 +681,16 @@ export default function App() {
 
       {/* Transient Notification Feedback Toast */}
       {notificationBannerMsg && (
-        <div className="bg-blue-600 text-white text-xs font-medium px-4 py-2 sticky top-15 z-30 shadow-md animate-in fade-in">
+        <div className="sticky top-16 z-30 animatefadein slide-in-from-top-1 duration-200">
           <div className="max-w-4xl mx-auto w-full flex items-center justify-between">
-            <div className="flex items-center gap-2">
+            <div className="rounded-lg border border-blue-500/40 bg-blue-600/90 text-white text-xs font-medium px-4 py-2.5 shadow-md flex items-center gap-2">
               <Sparkles className="w-3.5 h-3.5" />
               <span>{notificationBannerMsg}</span>
             </div>
             <button
               type="button"
               onClick={() => setNotificationBannerMsg(null)}
-              className="text-white/80 hover:text-white p-1 cursor-pointer"
+              className="text-white/80 hover:text-white p-1 cursor-pointer rounded hover:bg-white/10"
             >
               ✕
             </button>
@@ -700,18 +700,18 @@ export default function App() {
 
       {/* Triggered Task Reminder Toast Alerts */}
       {firedReminders.length > 0 && (
-        <div className="fixed top-18 right-4 z-50 max-w-sm w-full space-y-2 pointer-events-auto">
+        <div className="fixed top-[calc(100vh-400px)] right-4 z-50 max-w-sm w-full space-y-2 pointer-events-auto sm:top-20">
           {firedReminders.map((reminder) => (
             <div
               key={reminder.id}
-              className="p-3 bg-slate-900 border border-amber-500/80 rounded-2xl shadow-2xl flex items-start gap-2.5 text-xs text-slate-100 animate-in slide-in-from-top-2"
+              className="rounded-xl border border-amber-500/80 bg-surface-panel p-3 shadow-2xl flex items-start gap-2.5 text-xs text-text-primary animatefadein slide-in-from-top-2"
             >
-              <div className="w-7 h-7 rounded-lg bg-amber-500/20 text-amber-400 flex items-center justify-center shrink-0 mt-0.5">
+              <div className="w-8 h-8 rounded-lg bg-amber-500/20 text-amber-400 flex items-center justify-center shrink-0 mt-0.5">
                 <Bell className="w-4 h-4" />
               </div>
               <div className="flex-1 min-w-0">
-                <p className="font-semibold text-slate-100">{reminder.message}</p>
-                <div className="flex items-center gap-2 mt-1.5">
+                <p className="font-semibold text-text-primary">{reminder.message}</p>
+                <div className="flex items-center gap-2 mt-2">
                   <button
                     type="button"
                     onClick={() => {
@@ -722,7 +722,7 @@ export default function App() {
                       }
                       setFiredReminders(prev => prev.filter(r => r.id !== reminder.id));
                     }}
-                    className="px-2 py-1 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold rounded-lg text-[10px] transition cursor-pointer"
+                    className="px-3 py-1 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold rounded-lg text-[10px] transition cursor-pointer"
                   >
                     Start Timer
                   </button>
@@ -732,14 +732,14 @@ export default function App() {
                       snoozeReminder(reminder, 5);
                       setFiredReminders(prev => prev.filter(r => r.id !== reminder.id));
                     }}
-                    className="px-2 py-1 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-[10px] transition cursor-pointer"
+                    className="px-3 py-1 bg-surface-elevated hover:bg-surface-hover text-text-secondary rounded-lg text-[10px] transition cursor-pointer"
                   >
                     Snooze 5m
                   </button>
                   <button
                     type="button"
                     onClick={() => setFiredReminders(prev => prev.filter(r => r.id !== reminder.id))}
-                    className="px-2 py-1 text-slate-400 hover:text-slate-200 text-[10px] transition cursor-pointer"
+                    className="px-3 py-1 text-text-muted hover:text-text-primary text-[10px] transition cursor-pointer"
                   >
                     Dismiss
                   </button>
@@ -751,10 +751,10 @@ export default function App() {
       )}
 
       {/* Main Content Area */}
-      <main className="flex-1 max-w-4xl mx-auto w-full px-4 sm:px-6 py-5 pb-[calc(env(safe-area-inset-bottom,0px)+7.5rem)] space-y-5">
+      <main className="flex-1 max-w-4xl mx-auto w-full px-4 sm:px-6 py-6 pb-[calc(env(safe-area-inset-bottom,0px)+8rem)] space-y-6">
         {/* SECTION 1: TODAY'S PLANS (Timeline & Kanban) */}
         {mainSection === 'plans' && (
-          <div className="space-y-4 animate-in fade-in duration-150">
+          <div className="space-y-5 pageenter pageenteractive">
             {/* Active Pinned Plan Drawer */}
             <PinnedNotificationDrawer
               tasks={tasks}
@@ -773,17 +773,17 @@ export default function App() {
             {/* Sub-view toggle (Timeline vs Kanban) only when plans exist */}
             {tasks.length > 0 && (
               <div className="flex items-center justify-between pt-1">
-                <span className="text-xs font-bold text-slate-300 uppercase tracking-wider">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-text-muted">
                   Today's Schedule ({tasks.filter(t => !t.date || t.date === getTodayDateString()).length} plans)
                 </span>
-                <div className="flex items-center gap-1 bg-slate-900 p-1 rounded-xl border border-slate-800 text-xs">
+                <div className="flex items-center gap-1 bg-surface-elevated p-1 rounded-xl border border-border-default text-[10px]">
                   <button
                     type="button"
                     onClick={() => setPlansSubView('timeline')}
-                    className={`flex items-center gap-1 px-3 py-1 rounded-lg font-medium transition cursor-pointer ${
+                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-medium transition cursor-pointer ${
                       plansSubView === 'timeline'
-                        ? 'bg-blue-600 text-white shadow-sm'
-                        : 'text-slate-400 hover:text-slate-200'
+                        ? 'bg-blue-600 text-white shadow-sm shadow-blue-500/20'
+                        : 'text-text-muted hover:text-text-primary'
                     }`}
                   >
                     <Calendar className="w-3 h-3" />
@@ -792,10 +792,10 @@ export default function App() {
                   <button
                     type="button"
                     onClick={() => setPlansSubView('kanban')}
-                    className={`flex items-center gap-1 px-3 py-1 rounded-lg font-medium transition cursor-pointer ${
+                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-medium transition cursor-pointer ${
                       plansSubView === 'kanban'
-                        ? 'bg-blue-600 text-white shadow-sm'
-                        : 'text-slate-400 hover:text-slate-200'
+                        ? 'bg-blue-600 text-white shadow-sm shadow-blue-500/20'
+                        : 'text-text-muted hover:text-text-primary'
                     }`}
                   >
                     <Columns3 className="w-3 h-3" />
@@ -851,56 +851,62 @@ export default function App() {
 
         {/* SECTION 2: WEEKLY PLANNER (Monday–Sunday) */}
         {mainSection === 'weekly' && (
-          <WeeklyPlannerView
-            tasks={tasks}
-            config={config}
-            lang={lang}
-            activeTimerTaskId={focusTask?.id || activeTimerState?.taskId || null}
-            onOpenCreate={(preselectedDate) => handleOpenCreate(preselectedDate)}
-            onOpenEdit={handleOpenEdit}
-            onToggleComplete={handleToggleComplete}
-            onDeleteTask={handleDeleteTask}
-            onDuplicateTask={handleDuplicateTask}
-            onStartTimer={(task) => {
-              setTimerAutoStart(true);
-              setFocusTask(task);
-            }}
-          />
+          <div className="pageenter pageenteractive">
+            <WeeklyPlannerView
+              tasks={tasks}
+              config={config}
+              lang={lang}
+              activeTimerTaskId={focusTask?.id || activeTimerState?.taskId || null}
+              onOpenCreate={(preselectedDate) => handleOpenCreate(preselectedDate)}
+              onOpenEdit={handleOpenEdit}
+              onToggleComplete={handleToggleComplete}
+              onDeleteTask={handleDeleteTask}
+              onDuplicateTask={handleDuplicateTask}
+              onStartTimer={(task) => {
+                setTimerAutoStart(true);
+                setFocusTask(task);
+              }}
+            />
+          </div>
         )}
 
         {/* SECTION 3: SMART PRODUCTIVITY & ANALYTICS DASHBOARD */}
         {mainSection === 'analytics' && (
-          <AnalyticsView
-            tasks={tasks}
-            focusSessions={focusSessions}
-            config={config}
-            dailyGoalMinutes={dailyGoalMinutes}
-            lang={lang}
-            streakStats={streakStats}
-            activeTimerTaskId={focusTask?.id || activeTimerState?.taskId || null}
-            onOpenFocusModal={(t) => {
-              setTimerAutoStart(true);
-              setFocusTask(t || tasks.find(x => !x.completed) || null);
-            }}
-            onToggleComplete={handleToggleComplete}
-            onNavigateToPlans={() => setMainSection('plans')}
-            onNavigateToWeekly={() => setMainSection('weekly')}
-            onOpenOptimizer={() => setIsOptimizerOpen(true)}
-            onTriggerRebalance={handleTriggerRebalance}
-          />
+          <div className="pageenter pageenteractive">
+            <AnalyticsView
+              tasks={tasks}
+              focusSessions={focusSessions}
+              config={config}
+              dailyGoalMinutes={dailyGoalMinutes}
+              lang={lang}
+              streakStats={streakStats}
+              activeTimerTaskId={focusTask?.id || activeTimerState?.taskId || null}
+              onOpenFocusModal={(t) => {
+                setTimerAutoStart(true);
+                setFocusTask(t || tasks.find(x => !x.completed) || null);
+              }}
+              onToggleComplete={handleToggleComplete}
+              onNavigateToPlans={() => setMainSection('plans')}
+              onNavigateToWeekly={() => setMainSection('weekly')}
+              onOpenOptimizer={() => setIsOptimizerOpen(true)}
+              onTriggerRebalance={handleTriggerRebalance}
+            />
+          </div>
         )}
 
         {/* SECTION 4: PREFERENCES & SETTINGS */}
         {mainSection === 'settings' && (
-          <SettingsView
-            settings={settings}
-            config={config}
-            onUpdateSettings={setSettings}
-            onUpdateConfig={setConfig}
-            onClearAllPlans={handleClearAllPlans}
-            onRestoreData={handleRestoreData}
-            plansCount={tasks.length}
-          />
+          <div className="pageenter pageenteractive">
+            <SettingsView
+              settings={settings}
+              config={config}
+              onUpdateSettings={setSettings}
+              onUpdateConfig={setConfig}
+              onClearAllPlans={handleClearAllPlans}
+              onRestoreData={handleRestoreData}
+              plansCount={tasks.length}
+            />
+          </div>
         )}
       </main>
 
@@ -980,17 +986,17 @@ export default function App() {
 
       {/* Active Session Switch Confirmation Prompt */}
       {activeSessionPrompt && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in">
-          <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 max-w-sm w-full space-y-4 shadow-2xl">
-            <h3 className="text-base font-bold text-slate-100">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animatefadein duration-200">
+          <div className="rounded-2xl border border-border-default bg-surface-panel p-6 max-w-sm w-full shadow-xl">
+            <h3 className="text-base font-bold text-text-primary">
               {lang === 'am' ? 'የሚሰራ የትኩረት ክፍለ ጊዜ አለ' : 'Session Already In Progress'}
             </h3>
-            <p className="text-xs text-slate-300 leading-relaxed">
+            <p className="text-xs text-text-secondary leading-relaxed mt-1">
               {lang === 'am'
                 ? `አሁን "${activeSessionPrompt.runningTitle}" እየሄደ ነው። ምን ማድረግ ይፈልጋሉ?`
                 : `A focus timer is actively running for "${activeSessionPrompt.runningTitle}". How would you like to proceed?`}
             </p>
-            <div className="space-y-2 pt-2">
+            <div className="space-y-2 pt-3">
               <button
                 type="button"
                 onClick={() => {
@@ -1001,7 +1007,7 @@ export default function App() {
                     setFocusTask(running);
                   }
                 }}
-                className="w-full py-2.5 px-4 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-xs font-semibold transition cursor-pointer active:scale-95"
+                className="w-full py-3 px-4 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-sm font-semibold transition active:scale-[0.97] cursor-pointer shadow-lg shadow-blue-600/20"
               >
                 {lang === 'am' ? 'የነበረውን ክፍለ ጊዜ ቀጥል' : 'Continue Running Session'}
               </button>
@@ -1013,14 +1019,14 @@ export default function App() {
                   setTimerAutoStart(true);
                   setFocusTask(pending);
                 }}
-                className="w-full py-2.5 px-4 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-xl text-xs font-medium border border-slate-700/60 transition cursor-pointer active:scale-95"
+                className="w-full py-3 px-4 bg-surface-elevated hover:bg-surface-hover text-text-secondary rounded-xl text-sm font-medium border border-border-default transition active:scale-[0.97] cursor-pointer"
               >
                 {lang === 'am' ? 'ወደ አዲሱ ክፍለ ጊዜ ቀይር' : 'Switch to New Session'}
               </button>
               <button
                 type="button"
                 onClick={() => setActiveSessionPrompt(null)}
-                className="w-full py-2 px-4 text-slate-400 hover:text-slate-200 text-xs font-medium transition cursor-pointer"
+                className="w-full py-2 px-4 text-text-muted hover:text-text-primary text-sm font-medium transition cursor-pointer"
               >
                 {lang === 'am' ? 'ይቅር / ሰርዝ' : 'Cancel'}
               </button>

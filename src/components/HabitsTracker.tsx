@@ -14,6 +14,7 @@ import {
   Bell,
   Award,
 } from 'lucide-react';
+import { t } from '../utils/i18n';
 import {
   isHabitCompletedOnDate,
   toggleHabitForDate,
@@ -38,6 +39,42 @@ const HABIT_COLORS = [
   '#8b5cf6', // Violet
   '#ea580c', // Orange
 ];
+
+type WeekDayDotProps = {
+  day: { dateStr: string; dayName: string };
+  habit: Habit;
+  todayStr: string;
+  habitColor: string;
+  onToggle: (dateStr: string) => void;
+};
+
+const WeekDayDot: React.FC<WeekDayDotProps> = ({
+  day,
+  habit,
+  todayStr,
+  habitColor,
+  onToggle,
+}) => {
+  const isComplete = isHabitCompletedOnDate(habit, day.dateStr);
+  const isToday = day.dateStr === todayStr;
+  const dotClass = isComplete
+    ? 'text-white shadow-sm'
+    : isToday
+    ? 'bg-surface-hover border border-border-focused text-text-muted hover:border-border-focused'
+    : 'bg-surface-hover border border-border-default text-text-muted hover:border-border-focused';
+
+  return (
+    <button
+      key={day.dateStr}
+      type="button"
+      onClick={() => onToggle(day.dateStr)}
+      title={`${day.dayName} (${day.dateStr}): ${isComplete ? 'Completed' : 'Missed'} (Click to toggle)`}
+      className={`w-4 h-4 rounded-lg flex items-center justify-center text-[9px] font-bold transition cursor-pointer ${dotClass} ${isComplete ? `bg-[${habitColor}]` : ''}`}
+    >
+      {day.dayName[0]}
+    </button>
+  );
+};
 
 export const HabitsTracker: React.FC<HabitsTrackerProps> = ({
   habits = [],
@@ -156,57 +193,55 @@ export const HabitsTracker: React.FC<HabitsTrackerProps> = ({
   return (
     <section
       aria-label="Daily Habits & Routines"
-      className="w-full bg-slate-900 border border-slate-800 rounded-2xl p-4 sm:p-5 space-y-4 shadow-sm"
+      className="w-full page-section space-y-4"
     >
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-800">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-border-default">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-amber-500/10 text-amber-400 border border-amber-500/30 flex items-center justify-center shrink-0">
-            <Flame className="w-5 h-5 text-amber-400 fill-amber-400/20" />
+          <div className="w-9 h-9 rounded-lg bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 flex items-center justify-center shrink-0">
+            <Flame className="w-4.5 h-4.5 text-emerald-400 fill-emerald-400/20" />
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <h3 className="text-base font-bold text-slate-100">
-                Daily Habits & Routines
+              <h3 className="text-sm font-bold text-text-primary">
+                {t('dailyHabitsTitle', lang)}
               </h3>
               {habits.length > 0 && (
-                <span className="text-[10px] font-mono font-bold bg-amber-500/15 text-amber-300 border border-amber-500/30 px-2 py-0.5 rounded-full">
-                  {todayCompletedCount}/{habits.length} Done ({completionPercent}%)
+                <span className="text-[9px] font-mono font-bold bg-emerald-900/30 text-emerald-400 border border-emerald-500/50 px-2 py-0.5 rounded-full">
+                  {todayCompletedCount}/{habits.length} {t('done', lang)} ({completionPercent}%)
                 </span>
               )}
             </div>
-            <p className="text-xs text-slate-400">
-              Build daily momentum and consistent deep focus streaks
-            </p>
+            <p className="text-[10px] text-text-muted">{t('habitsDesc', lang)}</p>
           </div>
         </div>
 
         <button
           type="button"
           onClick={openCreateModal}
-          className="self-start sm:self-auto px-3 py-1.5 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-xs font-semibold shadow-sm transition active:scale-95 cursor-pointer flex items-center gap-1.5"
+          className="self-start sm:self-auto px-3 py-1.5 btnprimary text-[10px] flex items-center gap-1.5"
         >
-          <Plus className="w-3.5 h-3.5" />
-          <span>Add Habit</span>
+          <Plus className="w-3 h-3" />
+          <span>{t('addHabit', lang)}</span>
         </button>
       </div>
 
       {/* Habits Progress Bar if habits exist */}
       {habits.length > 0 && (
-        <div className="w-full bg-slate-950/80 rounded-xl p-2.5 border border-slate-800/80 space-y-1.5">
-          <div className="flex items-center justify-between text-xs text-slate-300">
-            <span className="font-semibold text-slate-300 flex items-center gap-1.5">
-              <Sparkles className="w-3 h-3 text-amber-400" />
-              <span>Today's Habit Momentum</span>
+        <div className="w-full rounded-lg border border-border-default bg-surface-elevated/50 p-3 space-y-1.5">
+          <div className="flex items-center justify-between text-xs text-text-muted">
+            <span className="font-semibold text-text-primary flex items-center gap-1.5">
+              <Sparkles className="w-3 h-3 text-blue-400" />
+              {t('todayHabitMomentum', lang)}
             </span>
-            <span className="font-mono text-xs font-bold text-amber-400">
+            <span className="font-mono text-xs font-bold text-blue-400">
               {completionPercent}%
             </span>
           </div>
-          <div className="w-full bg-slate-900 h-2 rounded-full overflow-hidden border border-slate-800">
+          <div className="progresstrack">
             <div
+              className="progressfill bg-gradient-to-r from-emerald-500 via-amber-500 to-blue-500"
               style={{ width: `${completionPercent}%` }}
-              className="bg-gradient-to-r from-amber-500 via-orange-500 to-emerald-400 h-full rounded-full transition-all duration-500"
             />
           </div>
         </div>
@@ -214,23 +249,23 @@ export const HabitsTracker: React.FC<HabitsTrackerProps> = ({
 
       {/* Empty State */}
       {habits.length === 0 ? (
-        <div className="text-center py-8 px-4 rounded-xl border border-dashed border-slate-800 bg-slate-950/40">
-          <Flame className="w-8 h-8 text-slate-600 mx-auto mb-2" />
-          <h4 className="text-sm font-semibold text-slate-300">No habits tracked yet</h4>
-          <p className="text-xs text-slate-500 mt-1 max-w-sm mx-auto">
-            Form positive habits like Morning Planning, 45m Deep Work, or Daily Review to build unstoppable streaks.
+        <div className="text-center py-8 px-4 rounded-xl border-2 border-dashed border-border-default bg-surface-elevated/40">
+          <Flame className="w-8 h-8 text-text-muted mx-auto mb-2" />
+          <h4 className="text-sm font-semibold text-text-primary">{t('noHabitsTracked', lang)}</h4>
+          <p className="text-[10px] text-text-muted mt-1 max-w-sm mx-auto">
+            {t('noHabitsDesc', lang)}
           </p>
           <button
             type="button"
             onClick={openCreateModal}
-            className="mt-3 px-3.5 py-1.5 bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold rounded-xl shadow transition cursor-pointer"
+            className="mt-3 px-3.5 py-1.5 btnprimary text-[10px]"
           >
-            Create Your First Habit
+            {t('createFirstHabit', lang)}
           </button>
         </div>
       ) : (
         /* Habits List */
-        <div className="space-y-2.5">
+        <div className="space-y-2">
           {habits.map((habit) => {
             const isDoneToday = isHabitCompletedOnDate(habit, todayStr);
             const habitColor = habit.color || '#3b82f6';
@@ -238,24 +273,24 @@ export const HabitsTracker: React.FC<HabitsTrackerProps> = ({
             return (
               <div
                 key={habit.id}
-                className={`p-3 rounded-xl border transition-all duration-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3 ${
+                className={`p-3 rounded-lg border transition-all duration-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3 ${
                   isDoneToday
-                    ? 'bg-slate-950/80 border-emerald-500/30'
-                    : 'bg-slate-950/50 border-slate-800 hover:border-slate-700'
+                    ? 'bg-emerald-900/20 border-emerald-500/40'
+                    : 'bg-surface-panel border-border-default hover:border-border-focused'
                 }`}
               >
                 {/* Left: Checkbox + Title + Streak */}
-                <div className="flex items-center gap-3 min-w-0">
+                <div className="flex items-center gap-2 min-w-0">
                   <button
                     type="button"
                     onClick={() => handleToggleHabit(habit, todayStr)}
-                    className="cursor-pointer shrink-0 transition-transform active:scale-95"
+                    className="cursor-pointer shrink-0 transition-transform active:scale-[0.97]"
                     aria-label={isDoneToday ? `Mark ${habit.title} incomplete` : `Mark ${habit.title} completed today`}
                   >
                     {isDoneToday ? (
                       <CheckCircle2 className="w-5 h-5 text-emerald-400 fill-emerald-500/20" />
                     ) : (
-                      <Circle className="w-5 h-5 text-slate-500 hover:text-slate-300" />
+                      <Circle className="w-5 h-5 text-text-muted hover:text-text-primary" />
                     )}
                   </button>
 
@@ -266,21 +301,21 @@ export const HabitsTracker: React.FC<HabitsTrackerProps> = ({
                         style={{ backgroundColor: habitColor }}
                       />
                       <span
-                        className={`text-xs font-semibold text-slate-100 truncate ${
-                          isDoneToday ? 'line-through text-slate-400' : ''
+                        className={`text-xs font-semibold text-text-primary truncate ${
+                          isDoneToday ? 'line-through text-text-muted' : ''
                         }`}
                       >
                         {habit.title}
                       </span>
                     </div>
 
-                    <div className="flex items-center gap-2 mt-0.5 text-[10px] text-slate-400">
-                      <span className="flex items-center gap-1 text-amber-400 font-semibold font-mono">
-                        <Flame className="w-3 h-3 fill-amber-400" />
-                        <span>{habit.streak || 0}d streak</span>
+                    <div className="flex items-center gap-2 mt-0.5 text-[9px] text-text-muted">
+                      <span className="flex items-center gap-1 text-emerald-400 font-semibold font-mono">
+                        <Flame className="w-3 h-3 fill-emerald-400" />
+                        <span>{habit.streak || 0}d {t('streak', lang)}</span>
                       </span>
                       <span>•</span>
-                      <span>Best: {habit.bestStreak || 0}d</span>
+                      <span>{t('best', lang)}: {habit.bestStreak || 0}d</span>
                       {habit.reminderTime && (
                         <>
                           <span>•</span>
@@ -295,34 +330,19 @@ export const HabitsTracker: React.FC<HabitsTrackerProps> = ({
                 </div>
 
                 {/* Right: 7-Day Mini Dot History + Edit/Delete */}
-                <div className="flex items-center justify-between sm:justify-end gap-3 shrink-0 pt-2 sm:pt-0 border-t sm:border-t-0 border-slate-800/80">
+                <div className="flex items-center justify-between sm:justify-end gap-3 shrink-0 pt-2 sm:pt-0 border-t sm:border-t-0 border-border-default">
                   {/* 7-Day Week History Dots */}
-                  <div className="flex items-center gap-1.5" title="Past 7 days completion history">
-                    {weekDays.map((d) => {
-                      const isComplete = isHabitCompletedOnDate(habit, d.dateStr);
-                      const isToday = d.dateStr === todayStr;
-
-                      return (
-                        <button
-                          key={d.dateStr}
-                          type="button"
-                          onClick={() => handleToggleHabit(habit, d.dateStr)}
-                          title={`${d.dayName} (${d.dateStr}): ${isComplete ? 'Completed' : 'Missed'} (Click to toggle)`}
-                          className={`w-5 h-5 rounded-md flex items-center justify-center text-[9px] font-bold transition cursor-pointer ${
-                            isComplete
-                              ? 'text-white shadow-sm'
-                              : isToday
-                              ? 'bg-slate-800 border border-slate-600 text-slate-400 hover:border-slate-500'
-                              : 'bg-slate-900 border border-slate-800 text-slate-600 hover:border-slate-700'
-                          }`}
-                          style={{
-                            backgroundColor: isComplete ? habitColor : undefined,
-                          }}
-                        >
-                          {d.dayName[0]}
-                        </button>
-                      );
-                    })}
+                  <div className="flex items-center gap-1.5" title={t('pastSevenDaysHistory', lang)}>
+                    {weekDays.map((d) => (
+                      <WeekDayDot
+                        key={d.dateStr}
+                        day={d}
+                        habit={habit}
+                        todayStr={todayStr}
+                        habitColor={habitColor}
+                        onToggle={(dateStr) => handleToggleHabit(habit, dateStr)}
+                      />
+                    ))}
                   </div>
 
                   {/* Actions */}
@@ -330,18 +350,18 @@ export const HabitsTracker: React.FC<HabitsTrackerProps> = ({
                     <button
                       type="button"
                       onClick={() => openEditModal(habit)}
-                      className="p-1.5 text-slate-400 hover:text-blue-400 hover:bg-slate-800 rounded-lg transition cursor-pointer"
+                      className="p-1.5 text-text-muted hover:text-blue-400 hover:bg-surface-hover rounded-lg transition cursor-pointer"
                       title="Edit Habit"
                     >
-                      <Edit2 className="w-3.5 h-3.5" />
+                      <Edit2 className="w-3 h-3" />
                     </button>
                     <button
                       type="button"
                       onClick={() => setHabitToDelete(habit)}
-                      className="p-1.5 text-slate-400 hover:text-rose-400 hover:bg-slate-800 rounded-lg transition cursor-pointer"
+                      className="p-1.5 text-text-muted hover:text-rose-400 hover:bg-surface-hover rounded-lg transition cursor-pointer"
                       title="Delete Habit"
                     >
-                      <Trash2 className="w-3.5 h-3.5" />
+                      <Trash2 className="w-3 h-3" />
                     </button>
                   </div>
                 </div>
@@ -353,29 +373,27 @@ export const HabitsTracker: React.FC<HabitsTrackerProps> = ({
 
       {/* Add / Edit Habit Modal */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-150">
-          <div className="w-full max-w-sm rounded-2xl bg-slate-900 border border-slate-800 p-5 shadow-2xl relative space-y-4">
-            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-black/60 backdrop-blur-sm animatefadein duration-200">
+          <div className="w-full max-w-sm rounded-2xl border border-border-default bg-surface-panel p-6 shadow-xl relative animatezoomin duration-200">
+            <div className="flex items-center justify-between border-b border-border-default pb-3 mb-4">
               <div className="flex items-center gap-2">
-                <Flame className="w-4 h-4 text-amber-400" />
-                <h3 className="text-sm font-bold text-slate-100">
-                  {editingHabitId ? 'Edit Habit' : 'Create New Habit'}
+                <Flame className="w-4 h-4 text-emerald-400" />
+                <h3 className="text-sm font-bold text-text-primary">
+                  {editingHabitId ? t('editHabit', lang) : t('createNewHabit', lang)}
                 </h3>
               </div>
               <button
                 type="button"
                 onClick={() => setIsModalOpen(false)}
-                className="p-1 text-slate-400 hover:text-slate-200 rounded-lg"
+                className="btnicon btnghost size-8 text-text-muted hover:text-text-primary hover:bg-surface-hover"
               >
                 <X className="w-4 h-4" />
               </button>
             </div>
 
-            <form onSubmit={handleSaveHabit} className="space-y-3.5">
+            <form onSubmit={handleSaveHabit} className="space-y-4">
               <div>
-                <label className="text-[11px] font-semibold text-slate-300 block mb-1">
-                  Habit Title *
-                </label>
+                <label className="fieldlabel">{t('habitTitle', lang)} <span className="text-text-muted">*</span></label>
                 <input
                   type="text"
                   required
@@ -383,29 +401,27 @@ export const HabitsTracker: React.FC<HabitsTrackerProps> = ({
                   value={habitTitle}
                   onChange={(e) => setHabitTitle(e.target.value)}
                   placeholder="e.g. Read 20 pages or 45m Deep Work"
-                  className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-100 focus:outline-none focus:border-blue-500"
+                  className="fieldinput"
                 />
               </div>
 
               {/* Target Days Per Week */}
               <div>
-                <label className="text-[11px] font-semibold text-slate-300 block mb-1">
-                  Target Frequency
-                </label>
+                <label className="fieldlabel">{t('targetFrequency', lang)}</label>
                 <div className="grid grid-cols-3 gap-2">
                   {[
-                    { label: 'Everyday (7d)', val: 7 },
-                    { label: 'Weekdays (5d)', val: 5 },
-                    { label: 'Flexible (3d)', val: 3 },
+                    { label: t('everyday7d', lang), val: 7 },
+                    { label: t('weekdays5d', lang), val: 5 },
+                    { label: t('flexible3d', lang), val: 3 },
                   ].map((freq) => (
                     <button
                       key={freq.val}
                       type="button"
                       onClick={() => setTargetDays(freq.val)}
-                      className={`p-2 rounded-xl text-xs font-medium border text-center transition cursor-pointer ${
+                      className={`p-2 rounded-lg text-[9px] font-medium transition cursor-pointer ${
                         targetDays === freq.val
-                          ? 'bg-blue-600 text-white border-blue-500 font-bold'
-                          : 'bg-slate-950 text-slate-400 border-slate-800'
+                          ? 'btnprimary'
+                          : 'btnghost text-text-muted hover:text-text-primary hover:bg-surface-hover'
                       }`}
                     >
                       {freq.label}
@@ -416,9 +432,7 @@ export const HabitsTracker: React.FC<HabitsTrackerProps> = ({
 
               {/* Color Selection */}
               <div>
-                <label className="text-[11px] font-semibold text-slate-300 block mb-1">
-                  Badge Color
-                </label>
+                <label className="fieldlabel">{t('badgeColor', lang)}</label>
                 <div className="flex gap-2">
                   {HABIT_COLORS.map((c) => (
                     <button
@@ -430,24 +444,24 @@ export const HabitsTracker: React.FC<HabitsTrackerProps> = ({
                       }`}
                       style={{ backgroundColor: c }}
                     >
-                      {selectedColor === c && <Check className="w-3.5 h-3.5 text-white stroke-[3]" />}
+                      {selectedColor === c && <Check className="w-3 h-3 text-white stroke-[3]" />}
                     </button>
                   ))}
                 </div>
               </div>
 
               {/* Optional Daily Reminder */}
-              <div className="pt-2 border-t border-slate-800 space-y-2">
+              <div className="pt-2 border-t border-border-default space-y-2">
                 <label className="flex items-center justify-between cursor-pointer">
-                  <span className="text-[11px] font-semibold text-slate-300 flex items-center gap-1.5">
-                    <Bell className="w-3 h-3 text-amber-400" />
-                    <span>Daily Reminder</span>
+                  <span className="text-[9px] font-semibold text-text-secondary flex items-center gap-1">
+                    <Bell className="w-3 h-3 text-emerald-400" />
+                    {t('dailyReminder', lang)}
                   </span>
                   <input
                     type="checkbox"
                     checked={reminderEnabled}
                     onChange={(e) => setReminderEnabled(e.target.checked)}
-                    className="w-3.5 h-3.5 text-blue-600 rounded bg-slate-950 border-slate-700"
+                    className="toggleswitch peer"
                   />
                 </label>
                 {reminderEnabled && (
@@ -455,24 +469,24 @@ export const HabitsTracker: React.FC<HabitsTrackerProps> = ({
                     type="time"
                     value={reminderTime}
                     onChange={(e) => setReminderTime(e.target.value)}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-1.5 text-xs text-slate-200 font-mono"
+                    className="w-full fieldinput text-xs font-mono"
                   />
                 )}
               </div>
 
-              <div className="flex justify-end gap-2 pt-2 border-t border-slate-800">
+              <div className="flex justify-end gap-3 pt-2 border-t border-border-default">
                 <button
                   type="button"
                   onClick={() => setIsModalOpen(false)}
-                  className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-xs font-medium cursor-pointer"
+                  className="btnsecondary text-[10px]"
                 >
-                  Cancel
+                  {t('cancel', lang)}
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-1.5 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-xs font-semibold shadow transition cursor-pointer"
+                  className="btnprimary text-[10px] flex items-center gap-1"
                 >
-                  {editingHabitId ? 'Save Changes' : 'Create Habit'}
+                  {editingHabitId ? t('saveChanges', lang) : t('createHabit', lang)}
                 </button>
               </div>
             </form>
@@ -482,25 +496,25 @@ export const HabitsTracker: React.FC<HabitsTrackerProps> = ({
 
       {/* Delete Confirmation */}
       {habitToDelete && (
-        <div className="p-3.5 bg-rose-950/40 border border-rose-900/60 rounded-xl space-y-2 animate-in fade-in">
-          <p className="text-xs text-rose-300 font-semibold">
-            Delete habit "{habitToDelete.title}"?
-          </p>
-          <div className="flex justify-end gap-2">
-            <button
-              type="button"
-              onClick={() => setHabitToDelete(null)}
-              className="px-2.5 py-1 bg-slate-800 text-slate-300 rounded-lg text-xs"
-            >
-              Cancel
-            </button>
-            <button
-              type="button"
-              onClick={confirmDelete}
-              className="px-2.5 py-1 bg-rose-600 text-white rounded-lg text-xs font-semibold"
-            >
-              Delete
-            </button>
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animatefadein duration-200">
+          <div className="w-full max-w-sm rounded-2xl border border-border-default bg-surface-panel p-6 shadow-xl">
+            <p className="text-xs font-semibold text-text-primary">{t('deleteHabit', lang)} "{habitToDelete.title}"?</p>
+            <div className="flex justify-end gap-3 pt-3">
+              <button
+                type="button"
+                onClick={() => setHabitToDelete(null)}
+                className="btnsecondary text-xs"
+              >
+                {t('cancel', lang)}
+              </button>
+              <button
+                type="button"
+                onClick={confirmDelete}
+                className="btndanger text-xs font-bold"
+              >
+                {t('delete', lang)}
+              </button>
+            </div>
           </div>
         </div>
       )}

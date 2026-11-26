@@ -37,31 +37,31 @@ export const FloatingActiveTimer: React.FC<FloatingActiveTimerProps> = ({
   return (
     <aside
       aria-label="Active Timer Floating Bar"
-      className="fixed bottom-[calc(env(safe-area-inset-bottom,0px)+5.75rem)] left-3 right-3 sm:left-auto sm:right-6 sm:w-96 z-40 bg-slate-900/95 border border-blue-500/50 rounded-2xl p-3 shadow-2xl backdrop-blur-md animate-in slide-in-from-bottom duration-200"
+      className="fixed bottom-[calc(env(safe-area-inset-bottom,0px)+5.75rem)] left-3 right-3 sm:left-auto sm:right-6 sm:w-96 z-40 rounded-2xl border border-border-default bg-surface-panel p-3 shadow-xl backdrop-blur-lg slidedownin duration-200"
     >
       <div className="flex items-center justify-between gap-3">
         {/* Left: Indicator & Task Info */}
         <button
           type="button"
           onClick={onExpand}
-          className="flex items-center gap-2.5 min-w-0 flex-1 text-left cursor-pointer group"
+          className="flex items-center gap-2 min-w-0 flex-1 text-left cursor-pointer group"
           title="Click to expand focus timer"
         >
-          <div className={`w-8 h-8 rounded-xl flex items-center justify-center shrink-0 border ${
+          <div className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 border ${
             isBreak
-              ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30'
-              : 'bg-blue-500/20 text-blue-400 border-blue-500/30'
+              ? 'bg-emerald-900/30 text-emerald-400 border-emerald-500/40'
+              : 'bg-blue-900/30 text-blue-400 border-blue-500/40'
           }`}>
-            {isBreak ? <Coffee className="w-4 h-4" /> : <Flame className="w-4 h-4 text-amber-400" />}
+            {isBreak ? <Coffee className="w-3.5 h-3.5" /> : <Flame className="w-3.5 h-3.5 text-amber-400" />}
           </div>
           <div className="min-w-0">
-            <div className="flex items-center gap-1.5">
-              <span className={`w-2 h-2 rounded-full ${timerState.isRunning ? 'bg-emerald-400 animate-pulse' : 'bg-amber-400'}`} />
-              <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
-                {isBreak ? 'Break' : (isStopwatch ? 'Stopwatch' : 'Timer')} • {timerState.isRunning ? 'Running' : 'Paused'}
+            <div className="flex items-center gap-1">
+              <span className={`w-1.5 h-1.5 rounded-full ${timerState.isRunning ? 'bg-emerald-400 animateandroidpulse' : 'bg-text-muted'}`} />
+              <span className="text-[9px] font-bold uppercase tracking-wider text-text-muted">
+                {isBreak ? 'Recharge Break' : (isStopwatch ? 'Stopwatch' : 'Focus Timer')} • {timerState.isRunning ? 'Running' : 'Paused'}
               </span>
             </div>
-            <p className="text-xs font-semibold text-slate-100 truncate group-hover:text-blue-300 transition">
+            <p className="text-xs font-semibold text-text-primary truncate group-hover:text-blue-400 transition">
               {timerState.taskTitle}
             </p>
           </div>
@@ -69,7 +69,7 @@ export const FloatingActiveTimer: React.FC<FloatingActiveTimerProps> = ({
 
         {/* Center: Time digits */}
         <div className="text-right px-2">
-          <span className="font-mono text-base font-bold text-slate-100 tracking-tight">
+          <span className="font-mono text-base font-bold text-text-primary tracking-tight">
             {formatSeconds(secondsDisplay)}
           </span>
         </div>
@@ -79,8 +79,8 @@ export const FloatingActiveTimer: React.FC<FloatingActiveTimerProps> = ({
           <button
             type="button"
             onClick={onPauseResume}
-            className={`p-2 rounded-xl text-white transition active:scale-95 cursor-pointer ${
-              timerState.isRunning ? 'bg-amber-600 hover:bg-amber-500' : 'bg-emerald-600 hover:bg-emerald-500'
+            className={`p-2 rounded-lg text-white transition active:scale-[0.97] cursor-pointer ${
+              timerState.isRunning ? 'btnwarning' : 'btnsuccess'
             }`}
             title={timerState.isRunning ? 'Pause' : 'Resume'}
           >
@@ -90,7 +90,7 @@ export const FloatingActiveTimer: React.FC<FloatingActiveTimerProps> = ({
           <button
             type="button"
             onClick={onStop}
-            className="p-2 bg-slate-800 hover:bg-rose-900/40 text-slate-300 hover:text-rose-400 border border-slate-700 hover:border-rose-800 rounded-xl transition cursor-pointer"
+            className="p-2 rounded-lg btnghost text-text-muted hover:text-rose-400 hover:bg-rose-900/30 transition cursor-pointer"
             title="Stop timer"
           >
             <Square className="w-3.5 h-3.5" />
@@ -99,7 +99,7 @@ export const FloatingActiveTimer: React.FC<FloatingActiveTimerProps> = ({
           <button
             type="button"
             onClick={onExpand}
-            className="p-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl transition cursor-pointer"
+            className="p-2 rounded-lg btnghost text-text-muted hover:text-text-primary hover:bg-surface-hover transition cursor-pointer"
             title="Expand timer view"
           >
             <Maximize2 className="w-3.5 h-3.5" />
@@ -109,3 +109,5 @@ export const FloatingActiveTimer: React.FC<FloatingActiveTimerProps> = ({
     </aside>
   );
 };
+
+export default FloatingActiveTimer;

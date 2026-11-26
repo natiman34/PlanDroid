@@ -179,7 +179,7 @@ export const GeminiChatModal: React.FC<GeminiChatModalProps> = ({
     <div
       role="dialog"
       aria-label="Gemini Productivity Coach"
-      className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-slate-950/80 backdrop-blur-md animate-in fade-in duration-200"
+      className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-slate-950/80 backdrop-blur-md animatefadein duration-200"
     >
       <div className="bg-slate-900 border border-slate-800 rounded-t-3xl sm:rounded-3xl w-full max-w-lg h-[92vh] sm:h-[82vh] flex flex-col shadow-2xl overflow-hidden">
         {/* Modal Top Bar */}

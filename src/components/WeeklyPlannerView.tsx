@@ -150,23 +150,35 @@ export const WeeklyPlannerView: React.FC<WeeklyPlannerViewProps> = ({
 
   const timeFormat = config.timeFormat || '24h';
 
-  // Category badge colors
+  // Category badge colors (design system palette)
   const getCategoryColor = (cat?: string) => {
     switch (cat) {
-      case 'deep_work': return 'bg-indigo-500/15 text-indigo-300 border-indigo-500/30';
-      case 'meeting': return 'bg-sky-500/15 text-sky-300 border-sky-500/30';
-      case 'admin': return 'bg-slate-500/15 text-slate-300 border-slate-500/30';
-      case 'review': return 'bg-amber-500/15 text-amber-300 border-amber-500/30';
-      case 'break': return 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30';
-      case 'personal': return 'bg-purple-500/15 text-purple-300 border-purple-500/30';
-      default: return 'bg-slate-500/15 text-slate-300 border-slate-500/30';
+      case 'deep_work': return 'bg-blue-900/30 text-blue-400 border border-blue-500/40';
+      case 'meeting': return 'bg-indigo-900/30 text-indigo-400 border border-indigo-500/40';
+      case 'admin': return 'bg-slate-900/30 text-slate-400 border border-slate-500/40';
+      case 'review': return 'bg-amber-900/30 text-amber-400 border border-amber-500/40';
+      case 'break': return 'bg-emerald-900/30 text-emerald-400 border border-emerald-500/40';
+      case 'personal': return 'bg-purple-900/30 text-purple-400 border border-purple-500/40';
+      default: return 'bg-surface-hover text-text-muted border border-border-default';
     }
   };
 
+  const statCard = (title: string, value: string, subtitle: string, colorClass: string) => (
+    <div className="rounded-lg border border-border-default bg-surface-panel p-3 shadow-sm">
+      <span className="text-[10px] font-bold uppercase tracking-wider text-text-muted block mb-1">{title}</span>
+      <div className="flex items-baseline gap-1">
+        <span className={`text-base font-bold font-mono ${colorClass}`}>{value}</span>
+        <span className="text-[11px] text-text-muted">{subtitle}</span>
+      </div>
+    </div>
+  );
+
+  const isManuallyScheduled = (t: Task) => Boolean(t.startTime);
+
   return (
-    <div className="space-y-5 animate-in fade-in duration-150 pb-16">
+    <div className="space-y-5 pageenter pageenteractive pb-[calc(env(safe-area-inset-bottom,0px)+8rem)]">
       {/* 1. Header: Week Navigation & Controls */}
-      <div className="bg-slate-900/95 border border-slate-800 rounded-2xl p-4 sm:p-5 shadow-lg space-y-4">
+      <div className="rounded-xl border border-border-default bg-surface-panel p-4 sm:p-5 shadow-lg space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           {/* Week Title & Today button */}
           <div className="flex items-center gap-3">
@@ -175,14 +187,14 @@ export const WeeklyPlannerView: React.FC<WeeklyPlannerViewProps> = ({
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h2 className="text-base sm:text-lg font-bold text-slate-100">
-                  Weekly Planner
+                <h2 className="text-base sm:text-lg font-bold text-text-primary">
+                  {t('weeklyPlannerTitle', lang)}
                 </h2>
                 <span className="text-xs font-mono font-semibold text-blue-400 bg-blue-500/10 px-2 py-0.5 rounded-full border border-blue-500/20">
                   {currentClock}
                 </span>
               </div>
-              <p className="text-xs text-slate-400">
+              <p className="text-[10px] text-text-muted">
                 {formatReadableDate(weekStartDateStr, { shortDay: true })} – {formatReadableDate(weekEndDateStr, { shortDay: true, includeYear: true })}
               </p>
             </div>
@@ -194,18 +206,18 @@ export const WeeklyPlannerView: React.FC<WeeklyPlannerViewProps> = ({
             <button
               type="button"
               onClick={handleJumpToday}
-              className="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold border border-slate-700 transition cursor-pointer"
+              className="btnsecondary text-[10px]"
             >
-              Today
+              {t('jumpToday', lang)}
             </button>
 
             {/* Week Arrow Buttons */}
-            <div className="flex items-center bg-slate-950 rounded-xl border border-slate-800 p-0.5">
+            <div className="flex items-center bg-surface-elevated rounded-lg border border-border-default p-0.5">
               <button
                 type="button"
                 onClick={handlePrevWeek}
                 title="Previous Week"
-                className="p-1.5 rounded-lg hover:bg-slate-800 text-slate-300 transition cursor-pointer"
+                className="btnicon btnghost size-8 text-text-muted hover:text-text-primary hover:bg-surface-hover"
               >
                 <ChevronLeft className="w-4 h-4" />
               </button>
@@ -213,48 +225,37 @@ export const WeeklyPlannerView: React.FC<WeeklyPlannerViewProps> = ({
                 type="button"
                 onClick={handleNextWeek}
                 title="Next Week"
-                className="p-1.5 rounded-lg hover:bg-slate-800 text-slate-300 transition cursor-pointer"
+                className="btnicon btnghost size-8 text-text-muted hover:text-text-primary hover:bg-surface-hover"
               >
                 <ChevronRight className="w-4 h-4" />
               </button>
             </div>
 
             {/* View Mode Switcher */}
-            <div className="flex items-center bg-slate-950 rounded-xl border border-slate-800 p-0.5">
+            <div className="flex items-center bg-surface-elevated rounded-lg border border-border-default p-0.5">
               <button
                 type="button"
                 onClick={() => setViewMode('calendar')}
-                title="Weekly Calendar View"
-                className={`p-1.5 rounded-lg text-xs font-medium transition cursor-pointer flex items-center gap-1 ${
-                  viewMode === 'calendar' ? 'bg-blue-600 text-white shadow-sm' : 'text-slate-400 hover:text-slate-200'
-                }`}
+                title={t('viewCalendar', lang)}
+                className={`btnicon btnghost size-9 transition cursor-pointer ${viewMode === 'calendar' ? 'btnprimary' : 'btnghost text-text-muted hover:text-text-primary'}`}
               >
-                <CalendarDays className="w-3.5 h-3.5" />
-                <span className="hidden md:inline">Calendar</span>
+                <CalendarDays className="w-4 h-4" />
               </button>
-
               <button
                 type="button"
                 onClick={() => setViewMode('agenda')}
-                title="Daily Agenda View"
-                className={`p-1.5 rounded-lg text-xs font-medium transition cursor-pointer flex items-center gap-1 ${
-                  viewMode === 'agenda' ? 'bg-blue-600 text-white shadow-sm' : 'text-slate-400 hover:text-slate-200'
-                }`}
+                title={t('viewAgenda', lang)}
+                className={`btnicon btnghost size-9 transition cursor-pointer ${viewMode === 'agenda' ? 'btnprimary' : 'btnghost text-text-muted hover:text-text-primary'}`}
               >
-                <Layers className="w-3.5 h-3.5" />
-                <span className="hidden md:inline">Agenda</span>
+                <Layers className="w-4 h-4" />
               </button>
-
               <button
                 type="button"
                 onClick={() => setViewMode('list')}
-                title="Simple List View"
-                className={`p-1.5 rounded-lg text-xs font-medium transition cursor-pointer flex items-center gap-1 ${
-                  viewMode === 'list' ? 'bg-blue-600 text-white shadow-sm' : 'text-slate-400 hover:text-slate-200'
-                }`}
+                title={t('viewList', lang)}
+                className={`btnicon btnghost size-9 transition cursor-pointer ${viewMode === 'list' ? 'btnprimary' : 'btnghost text-text-muted hover:text-text-primary'}`}
               >
-                <List className="w-3.5 h-3.5" />
-                <span className="hidden md:inline">List</span>
+                <List className="w-4 h-4" />
               </button>
             </div>
 
@@ -262,54 +263,44 @@ export const WeeklyPlannerView: React.FC<WeeklyPlannerViewProps> = ({
             <button
               type="button"
               onClick={() => onOpenCreate(selectedDayDate)}
-              className="px-3.5 py-1.5 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-xs font-semibold shadow-md shadow-blue-600/20 transition active:scale-95 cursor-pointer flex items-center gap-1.5"
+              className="btnprimary text-xs flex items-center gap-1.5 whitespace-nowrap"
             >
               <Plus className="w-4 h-4" />
-              <span>Add Task</span>
+              <span>{t('addTask', lang)}</span>
             </button>
           </div>
         </div>
 
         {/* 2. Weekly Summary Metrics Ribbon */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-3 border-t border-slate-800 text-xs">
-          <div className="p-2.5 bg-slate-950/60 rounded-xl border border-slate-800">
-            <span className="text-[10px] text-slate-400 uppercase tracking-wider block">Total Weekly Tasks</span>
-            <div className="flex items-baseline gap-1.5 mt-0.5">
-              <span className="text-base font-bold font-mono text-slate-100">{weekStats.totalTasks}</span>
-              <span className="text-[11px] text-emerald-400 font-semibold">({weekStats.completedTasks} done)</span>
-            </div>
-          </div>
-
-          <div className="p-2.5 bg-slate-950/60 rounded-xl border border-slate-800">
-            <span className="text-[10px] text-slate-400 uppercase tracking-wider block">Completion Rate</span>
-            <div className="flex items-baseline gap-2 mt-0.5">
-              <span className="text-base font-bold font-mono text-emerald-400">{weekStats.completionRate}%</span>
-              <div className="flex-1 h-1.5 bg-slate-800 rounded-full overflow-hidden self-center">
-                <div
-                  className="h-full bg-emerald-500 transition-all duration-300"
-                  style={{ width: `${weekStats.completionRate}%` }}
-                />
-              </div>
-            </div>
-          </div>
-
-          <div className="p-2.5 bg-slate-950/60 rounded-xl border border-slate-800">
-            <span className="text-[10px] text-slate-400 uppercase tracking-wider block">Planned Focus Time</span>
-            <span className="text-base font-bold font-mono text-blue-400 mt-0.5 block">
-              {formatHoursMinutes(weekStats.plannedMinutes)}
-            </span>
-          </div>
-
-          <div className="p-2.5 bg-slate-950/60 rounded-xl border border-slate-800">
-            <span className="text-[10px] text-slate-400 uppercase tracking-wider block">Actual Time Tracked</span>
-            <span className="text-base font-bold font-mono text-indigo-400 mt-0.5 block">
-              {formatHoursMinutes(weekStats.actualMinutes)}
-            </span>
-          </div>
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-4 border-t border-border-default">
+          {statCard(
+            t('totalTasks', lang),
+            String(weekStats.totalTasks),
+            `(${weekStats.completedTasks} ${t('done', lang)})`,
+            'text-text-primary'
+          )}
+          {statCard(
+            t('completionRate', lang),
+            `${weekStats.completionRate}%`,
+            '',
+            'text-emerald-400'
+          )}
+          {statCard(
+            t('plannedFocus', lang),
+            formatHoursMinutes(weekStats.plannedMinutes),
+            '',
+            'text-blue-400'
+          )}
+          {statCard(
+            t('actualTime', lang),
+            formatHoursMinutes(weekStats.actualMinutes),
+            '',
+            'text-indigo-400'
+          )}
         </div>
       </div>
 
-      {/* 3. Horizontal Day Selector (Always available on mobile and agenda views) */}
+      {/* 3. Horizontal Day Selector */}
       <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
         {weekDays.map((day) => {
           const isSelected = day.dateStr === selectedDayDate;
@@ -322,32 +313,30 @@ export const WeeklyPlannerView: React.FC<WeeklyPlannerViewProps> = ({
               key={day.dateStr}
               type="button"
               onClick={() => setSelectedDayDate(day.dateStr)}
-              className={`flex-1 min-w-[70px] sm:min-w-[90px] p-2.5 rounded-2xl border text-center transition cursor-pointer select-none relative ${
+              className={`flex-1 min-w-[70px] sm:min-w-[88px] p-2.5 rounded-xl border text-center transition cursor-pointer select-none relative ${
                 isSelected
                   ? 'bg-blue-600/20 border-blue-500 text-blue-300 font-bold ring-1 ring-blue-500/50'
                   : day.isToday
-                  ? 'bg-slate-900 border-amber-500/50 text-amber-300'
-                  : 'bg-slate-900/80 border-slate-800 text-slate-400 hover:border-slate-700'
+                  ? 'bg-surface-elevated border-amber-500/50 text-amber-400'
+                  : 'bg-surface-elevated border-border-default text-text-muted hover:border-border-focused'
               }`}
             >
-              <span className="text-[11px] font-semibold uppercase block tracking-wider">
-                {day.dayShort}
-              </span>
-              <span className={`text-base font-mono font-bold block my-0.5 ${day.isToday ? 'text-amber-400' : 'text-slate-100'}`}>
+              <span className="text-[10px] font-bold uppercase block tracking-wider">{day.dayShort}</span>
+              <span className={`text-lg font-mono font-bold block my-0.5 ${day.isToday ? 'text-amber-400' : 'text-text-primary'}`}>
                 {day.dayNumber}
               </span>
-              <div className="flex items-center justify-center gap-1 text-[10px] text-slate-400">
+              <div className="flex items-center justify-center gap-1 text-[9px] text-text-muted">
                 {taskCount > 0 ? (
-                  <span className={`px-1.5 py-0.2 rounded-full font-mono text-[9px] ${completedCount === taskCount ? 'bg-emerald-950 text-emerald-400 font-bold' : 'bg-slate-800 text-slate-300'}`}>
+                  <span className={`px-1.5 py-0.2 rounded-full font-mono text-[8px] ${completedCount === taskCount ? 'bg-emerald-950/30 text-emerald-400 border border-emerald-500/50 font-bold' : 'bg-surface-hover text-text-muted border border-border-default'}`}>
                     {completedCount}/{taskCount}
                   </span>
                 ) : (
-                  <span className="text-slate-600">—</span>
+                  <span className="text-text-muted">—</span>
                 )}
               </div>
 
               {day.isToday && (
-                <span className="absolute top-1 right-1 w-1.5 h-1.5 rounded-full bg-amber-400" title="Today" />
+                <span className="absolute top-1 right-1 w-1.5 h-1.5 rounded-full bg-amber-400 animateandroidpulse" title="Today" />
               )}
             </button>
           );
@@ -358,7 +347,7 @@ export const WeeklyPlannerView: React.FC<WeeklyPlannerViewProps> = ({
 
       {/* VIEW A: Full Weekly Calendar Grid (Monday - Sunday) */}
       {viewMode === 'calendar' && (
-        <div className="grid grid-cols-1 md:grid-cols-7 gap-3">
+        <div className="grid grid-cols-1 md:grid-cols-7 gap-2">
           {weekDays.map((day) => {
             const dayInfo = tasksByDay.get(day.dateStr);
             const dayTasks = dayInfo?.tasks || [];
@@ -368,26 +357,24 @@ export const WeeklyPlannerView: React.FC<WeeklyPlannerViewProps> = ({
             return (
               <div
                 key={day.dateStr}
-                className={`flex flex-col rounded-2xl border bg-slate-900/90 overflow-hidden transition min-h-[380px] ${
-                  isToday ? 'border-blue-500/60 shadow-lg shadow-blue-900/10' : 'border-slate-800 hover:border-slate-700'
+                className={`flex flex-col rounded-xl border overflow-hidden transition min-h-[320px] ${
+                  isToday
+                    ? 'border-blue-500/60 shadow-lg shadow-blue-500/10'
+                    : 'border-border-default bg-surface-panel hover:border-border-focused'
                 }`}
               >
                 {/* Day Header */}
-                <div className={`p-3 border-b flex items-center justify-between ${
-                  isToday ? 'bg-blue-600/10 border-blue-500/30' : 'bg-slate-950/40 border-slate-800/80'
+                <div className={`p-2.5 border-b flex items-center justify-between ${
+                  isToday ? 'bg-blue-600/10 border-blue-500/30' : 'bg-surface-elevated/60 border-border-default'
                 }`}>
                   <div>
-                    <span className="text-xs font-bold text-slate-200 block">
-                      {day.dayName}
-                    </span>
-                    <span className="text-[11px] font-mono text-slate-400">
-                      {day.monthName} {day.dayNumber}
-                    </span>
+                    <span className="text-[10px] font-bold text-text-muted block">{day.dayName}</span>
+                    <span className="text-[11px] font-mono text-text-secondary">{day.monthName} {day.dayNumber}</span>
                   </div>
                   <button
                     type="button"
                     onClick={() => onOpenCreate(day.dateStr)}
-                    className="p-1 rounded-lg bg-slate-800 hover:bg-blue-600 text-slate-300 hover:text-white transition cursor-pointer"
+                    className="btnicon btnghost size-8 text-text-muted hover:text-blue-400 hover:bg-surface-hover"
                     title={`Add task for ${day.dayName}`}
                   >
                     <Plus className="w-3.5 h-3.5" />
@@ -395,79 +382,77 @@ export const WeeklyPlannerView: React.FC<WeeklyPlannerViewProps> = ({
                 </div>
 
                 {/* Day Tasks List */}
-                <div className="p-2.5 flex-1 flex flex-col gap-2 overflow-y-auto max-h-[500px]">
+                <div className="p-2 flex-1 flex flex-col gap-1.5 overflow-y-auto">
                   {dayTasks.length === 0 ? (
-                    <div className="flex-1 flex flex-col items-center justify-center p-4 text-center text-slate-500">
-                      <span className="text-xs">No tasks</span>
+                    <div className="flex-1 flex flex-col items-center justify-center p-4 text-center text-text-muted">
+                      <span className="text-[10px]">{t('noTasks', lang)}</span>
                       <button
                         type="button"
                         onClick={() => onOpenCreate(day.dateStr)}
-                        className="mt-2 text-[11px] text-blue-400 hover:underline cursor-pointer"
+                        className="mt-2 text-[10px] text-blue-400 hover:text-blue-300 cursor-pointer underline underline-offset-2"
                       >
-                        + Plan activity
+                        {t('addActivity', lang)}
                       </button>
                     </div>
                   ) : (
-                    dayTasks.map((t) => {
-                      const status = getTaskStatus(t, todayStr, currentClock, activeTimerTaskId);
-                      const hasConflict = conflicts.has(t.id);
-                      const isTimerRunning = activeTimerTaskId === t.id;
+                    dayTasks.map((task) => {
+                      const status = getTaskStatus(task, todayStr, currentClock, activeTimerTaskId);
+                      const hasConflict = conflicts.has(task.id);
+                      const isTimerRunning = activeTimerTaskId === task.id;
 
                       return (
                         <div
-                          key={t.id}
-                          className={`p-2.5 rounded-xl border text-left transition relative group ${
-                            t.completed
-                              ? 'bg-slate-950/40 border-slate-800/60 opacity-60'
+                          key={task.id}
+                          className={`p-2 rounded-lg border text-left transition relative group ${
+                            task.completed
+                              ? 'bg-surface-hover border-border-default opacity-60'
                               : isTimerRunning
-                              ? 'bg-blue-950/40 border-blue-500/80 shadow-md ring-1 ring-blue-500/30'
+                              ? 'bg-blue-900/30 border-blue-500/80 shadow-md ring-1 ring-blue-500/30'
                               : status === 'overdue'
-                              ? 'bg-rose-950/20 border-rose-800/50 hover:border-rose-700'
-                              : 'bg-slate-950/80 border-slate-800 hover:border-slate-700'
+                              ? 'bg-rose-900/20 border-rose-800/50 hover:border-rose-700'
+                              : 'bg-surface-base border-border-default hover:border-border-focused'
                           }`}
                         >
                           {/* Top: Category & Time */}
-                          <div className="flex items-center justify-between text-[10px] mb-1">
-                            <span className={`px-1.5 py-0.5 rounded-md font-semibold border ${getCategoryColor(t.category)}`}>
-                              {(t.category || 'task').replace('_', ' ')}
+                          <div className="flex items-center justify-between text-[9px] mb-1">
+                            <span className={`px-1.5 py-0.5 rounded text-[8px] font-semibold border ${getCategoryColor(task.category)}`}>
+                              {(task.category || 'task').replace('_', ' ')}
                             </span>
-                            {t.startTime && (
-                              <span className="font-mono text-slate-400 flex items-center gap-1">
+                            {task.startTime && (
+                              <span className="font-mono text-text-muted flex items-center gap-1">
                                 <Clock className="w-2.5 h-2.5" />
-                                {formatTime(t.startTime, timeFormat)}
+                                {formatTime(task.startTime, timeFormat)}
                               </span>
                             )}
                           </div>
 
                           {/* Title & Checkbox */}
-                          <div className="flex items-start gap-2">
+                          <div className="flex items-start gap-1.5">
                             <button
                               type="button"
-                              onClick={() => onToggleComplete(t.id)}
-                              className="mt-0.5 text-slate-400 hover:text-emerald-400 transition cursor-pointer shrink-0"
+                              onClick={() => onToggleComplete(task.id)}
+                              className="mt-0.5 text-text-muted hover:text-emerald-400 transition cursor-pointer shrink-0"
                             >
-                              {t.completed ? (
+                              {task.completed ? (
                                 <CheckCircle2 className="w-4 h-4 text-emerald-400" />
                               ) : (
                                 <Circle className="w-4 h-4" />
                               )}
                             </button>
                             <div className="min-w-0 flex-1">
-                              <h4 className={`text-xs font-semibold leading-snug truncate ${
-                                t.completed ? 'line-through text-slate-400' : 'text-slate-100'
+                              <h4 className={`text-sm font-semibold leading-snug truncate ${
+                                task.completed ? 'line-through text-text-muted' : 'text-text-primary'
                               }`}>
-                                {t.title}
+                                {task.title}
                               </h4>
-                              <div className="flex items-center gap-2 text-[10px] text-slate-400 mt-0.5">
-                                <span>{t.durationMinutes}m</span>
-                                {t.actualDurationMinutes ? (
-                                  <span className="text-blue-400 font-mono">
-                                    • {t.actualDurationMinutes}m tracked
-                                  </span>
+                              <div className="flex items-center gap-1.5 text-[9px] text-text-muted mt-0.5">
+                                <span>{task.durationMinutes}m</span>
+                                {task.actualDurationMinutes ? (
+                                  <span className="text-blue-400 font-mono">• {task.actualDurationMinutes}m tracked</span>
                                 ) : null}
-                                {t.recurrence && t.recurrence.frequency !== 'none' && (
-                                  <span title={`Recurs ${t.recurrence.frequency}`}>
-                                    <Repeat className="w-2.5 h-2.5 text-blue-400" />
+                                {task.recurrence && task.recurrence.frequency !== 'none' && (
+                                  <span title={`Recurs ${task.recurrence.frequency}`}>
+                                    <Repeat className="w-2 h-2 text-blue-400" />
                                   </span>
                                 )}
                               </div>
@@ -475,47 +460,47 @@ export const WeeklyPlannerView: React.FC<WeeklyPlannerViewProps> = ({
                           </div>
 
                           {/* Overlap Warning Badge */}
-                          {hasConflict && !t.completed && (
-                            <div className="mt-1.5 p-1 bg-amber-950/50 border border-amber-600/40 rounded text-[9px] text-amber-300 flex items-center gap-1">
-                              <AlertTriangle className="w-2.5 h-2.5 text-amber-400 shrink-0" />
-                              <span className="truncate">Overlaps with another plan</span>
+                          {hasConflict && !task.completed && (
+                            <div className="mt-1 p-1 bg-rose-900/20 border border-rose-800/50 rounded text-[8px] text-rose-400 flex items-center gap-0.5">
+                              <AlertTriangle className="w-2.5 h-2.5 text-rose-400 shrink-0" />
+                              <span className="truncate">{t('overlapsAnotherPlan', lang)}</span>
                             </div>
                           )}
 
                           {/* Card Action Bar */}
-                          <div className="mt-2 pt-1.5 border-t border-slate-800/80 flex items-center justify-between gap-1 opacity-90 group-hover:opacity-100 transition">
+                          <div className="mt-2 pt-1 border-t border-border-default flex items-center justify-between gap-1 opacity-90 group-hover:opacity-100 transition">
                             <button
                               type="button"
-                              onClick={() => onStartTimer(t)}
-                              className="px-2 py-0.5 rounded-md bg-blue-600/20 hover:bg-blue-600 text-blue-300 hover:text-white text-[10px] font-semibold transition cursor-pointer flex items-center gap-1"
+                              onClick={() => onStartTimer(task)}
+                              className="px-2 py-1 rounded bg-blue-600/20 hover:bg-blue-600 text-blue-300 hover:text-white text-[9px] font-semibold transition cursor-pointer flex items-center gap-0.5"
                               title="Start Timer for this task"
                             >
                               <Play className="w-2.5 h-2.5" />
-                              <span>Timer</span>
+                              <span>{t('startTimer', lang)}</span>
                             </button>
 
-                            <div className="flex items-center gap-1">
+                            <div className="flex items-center gap-0.5">
                               <button
                                 type="button"
-                                onClick={() => setCopyModalTask(t)}
-                                className="p-1 rounded text-slate-400 hover:text-slate-200 hover:bg-slate-800 transition cursor-pointer"
-                                title="Copy plan to another day"
+                                onClick={() => setCopyModalTask(task)}
+                                className="p-1 rounded text-text-muted hover:text-text-primary hover:bg-surface-hover transition cursor-pointer"
+                                title={t('copyTask', lang)}
                               >
                                 <Copy className="w-3 h-3" />
                               </button>
                               <button
                                 type="button"
-                                onClick={() => onOpenEdit(t)}
-                                className="p-1 rounded text-slate-400 hover:text-slate-200 hover:bg-slate-800 transition cursor-pointer"
-                                title="Edit plan"
+                                onClick={() => onOpenEdit(task)}
+                                className="p-1 rounded text-text-muted hover:text-text-primary hover:bg-surface-hover transition cursor-pointer"
+                                title={t('editPlan', lang)}
                               >
                                 <Edit className="w-3 h-3" />
                               </button>
                               <button
                                 type="button"
-                                onClick={() => setConfirmDeleteId(t.id)}
-                                className="p-1 rounded text-slate-400 hover:text-rose-400 hover:bg-rose-950/30 transition cursor-pointer"
-                                title="Delete plan"
+                                onClick={() => setConfirmDeleteId(task.id)}
+                                className="p-1 rounded text-text-muted hover:text-rose-400 hover:bg-rose-900/30 transition cursor-pointer"
+                                title={t('deletePlan', lang)}
                               >
                                 <Trash2 className="w-3 h-3" />
                               </button>
@@ -528,12 +513,10 @@ export const WeeklyPlannerView: React.FC<WeeklyPlannerViewProps> = ({
                 </div>
 
                 {/* Day Footer with Totals */}
-                <div className="p-2 border-t border-slate-800/80 bg-slate-950/40 text-[10px] text-slate-400 flex items-center justify-between">
-                  <span>Planned: {formatHoursMinutes(dayInfo?.plannedMins || 0)}</span>
+                <div className="p-2 border-t border-border-default bg-surface-elevated/40 text-[9px] text-text-muted flex items-center justify-between">
+                  <span>{t('planned', lang)}: {formatHoursMinutes(dayInfo?.plannedMins || 0)}</span>
                   {dayInfo?.actualMins ? (
-                    <span className="text-indigo-400 font-semibold font-mono">
-                      Act: {formatHoursMinutes(dayInfo.actualMins)}
-                    </span>
+                    <span className="text-blue-400 font-mono font-semibold">Act: {formatHoursMinutes(dayInfo.actualMins)}</span>
                   ) : null}
                 </div>
               </div>
@@ -544,28 +527,28 @@ export const WeeklyPlannerView: React.FC<WeeklyPlannerViewProps> = ({
 
       {/* VIEW B: Daily Agenda View (Detailed focus on selectedDayDate) */}
       {viewMode === 'agenda' && (
-        <div className="bg-slate-900/90 border border-slate-800 rounded-2xl p-5 space-y-4">
-          <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+        <div className="rounded-xl border border-border-default bg-surface-panel shadow-lg p-5 space-y-4">
+          <div className="flex items-center justify-between border-b border-border-default pb-3">
             <div>
-              <h3 className="text-base font-bold text-slate-100 flex items-center gap-2">
+              <h3 className="text-sm font-bold text-text-primary flex items-center gap-2">
                 <span>{formatReadableDate(selectedDayDate, { includeYear: true })}</span>
                 {selectedDayDate === todayStr && (
                   <span className="text-[10px] font-bold bg-amber-500/20 text-amber-400 px-2 py-0.5 rounded-full border border-amber-500/30">
-                    TODAY
+                    {t('today', lang).toUpperCase()}
                   </span>
                 )}
               </h3>
-              <p className="text-xs text-slate-400 mt-0.5">
-                Detailed chronological agenda with duration and overlap tracking
+              <p className="text-[10px] text-text-muted mt-0.5">
+                {t('agendaDesc', lang)}
               </p>
             </div>
             <button
               type="button"
               onClick={() => onOpenCreate(selectedDayDate)}
-              className="px-3 py-1.5 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-xs font-semibold shadow-sm transition active:scale-95 cursor-pointer flex items-center gap-1.5"
+              className="btnprimary text-xs flex items-center gap-1.5"
             >
-              <Plus className="w-4 h-4" />
-              <span>Add Plan</span>
+              <Plus className="w-3 h-3" />
+              <span>{t('scheduleNewPlan', lang)}</span>
             </button>
           </div>
 
@@ -577,142 +560,137 @@ export const WeeklyPlannerView: React.FC<WeeklyPlannerViewProps> = ({
 
             if (dayTasks.length === 0) {
               return (
-                <div className="py-12 text-center text-slate-400 space-y-3">
-                  <div className="w-12 h-12 rounded-2xl bg-slate-800 flex items-center justify-center mx-auto text-slate-500">
+                <div className="py-10 text-center space-y-3">
+                  <div className="w-12 h-12 rounded-xl bg-surface-elevated flex items-center justify-center mx-auto text-text-muted">
                     <CalendarIcon className="w-6 h-6" />
                   </div>
-                  <p className="text-sm font-semibold text-slate-200">No activities scheduled for this day</p>
-                  <p className="text-xs text-slate-500 max-w-sm mx-auto">
-                    Add meetings, deep focus sessions, reviews or personal tasks to optimize your day.
+                  <p className="text-sm font-semibold text-text-secondary">{t('noActivities', lang)}</p>
+                  <p className="text-[10px] text-text-muted max-w-xs mx-auto">
+                    {t('noActivitiesDesc', lang)}
                   </p>
                   <button
                     type="button"
                     onClick={() => onOpenCreate(selectedDayDate)}
-                    className="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-xs font-semibold shadow-md cursor-pointer"
+                    className="btnprimary text-xs inline-flex items-center gap-1"
                   >
-                    + Schedule New Plan
+                    <Plus className="w-3 h-3" />
+                    <span>{t('scheduleNewPlanShort', lang)}</span>
                   </button>
                 </div>
               );
             }
 
             return (
-              <div className="space-y-3">
-                {dayTasks.map((t) => {
-                  const status = getTaskStatus(t, todayStr, currentClock, activeTimerTaskId);
-                  const hasConflict = conflicts.has(t.id);
-                  const isTimerRunning = activeTimerTaskId === t.id;
+              <div className="space-y-2">
+                {dayTasks.map((task) => {
+                  const status = getTaskStatus(task, todayStr, currentClock, activeTimerTaskId);
+                  const hasConflict = conflicts.has(task.id);
+                  const isTimerRunning = activeTimerTaskId === task.id;
 
                   return (
                     <div
-                      key={t.id}
-                      className={`p-4 rounded-2xl border transition flex flex-col sm:flex-row sm:items-center justify-between gap-3 ${
-                        t.completed
-                          ? 'bg-slate-950/40 border-slate-800 opacity-60'
+                      key={task.id}
+                      className={`p-2.5 rounded-lg border transition flex flex-col sm:flex-row sm:items-center justify-between gap-2 ${
+                        task.completed
+                          ? 'bg-surface-hover border-border-default opacity-60'
                           : isTimerRunning
-                          ? 'bg-blue-950/40 border-blue-500 shadow-md ring-1 ring-blue-500/30'
+                          ? 'bg-blue-900/30 border-blue-500 shadow-md ring-1 ring-blue-500/30'
                           : status === 'overdue'
-                          ? 'bg-rose-950/20 border-rose-800/60'
-                          : 'bg-slate-950/80 border-slate-800 hover:border-slate-700'
+                          ? 'bg-rose-900/20 border-rose-800/60'
+                          : 'bg-surface-base border-border-default hover:border-border-focused'
                       }`}
                     >
                       {/* Left: Checkbox & Info */}
-                      <div className="flex items-start gap-3 flex-1 min-w-0">
+                      <div className="flex items-start gap-1.5 flex-1 min-w-0">
                         <button
                           type="button"
-                          onClick={() => onToggleComplete(t.id)}
-                          className="mt-1 text-slate-400 hover:text-emerald-400 transition cursor-pointer shrink-0"
+                          onClick={() => onToggleComplete(task.id)}
+                          className="mt-0.5 text-text-muted hover:text-emerald-400 transition cursor-pointer shrink-0"
                         >
-                          {t.completed ? (
-                            <CheckCircle2 className="w-5 h-5 text-emerald-400" />
+                          {task.completed ? (
+                            <CheckCircle2 className="w-4 h-4 text-emerald-400" />
                           ) : (
-                            <Circle className="w-5 h-5" />
+                            <Circle className="w-4 h-4" />
                           )}
                         </button>
                         <div className="min-w-0 flex-1">
-                          <div className="flex flex-wrap items-center gap-2 mb-1">
-                            <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-md border ${getCategoryColor(t.category)}`}>
-                              {(t.category || 'task').replace('_', ' ')}
+                          <div className="flex flex-wrap items-center gap-1 mb-1">
+                            <span className={`text-[9px] font-semibold px-2 py-0.5 rounded border ${getCategoryColor(task.category)}`}>
+                              {(task.category || 'task').replace('_', ' ')}
                             </span>
-                            <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md border ${
-                              t.priority === 'urgent' ? 'bg-rose-500/20 text-rose-400 border-rose-500/30' :
-                              t.priority === 'high' ? 'bg-amber-500/20 text-amber-400 border-amber-500/30' :
-                              'bg-slate-800 text-slate-400 border-slate-700'
+                            <span className={`text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded border ${
+                              task.priority === 'urgent' ? 'bg-rose-900 text-rose-400 border border-rose-800/50' :
+                              task.priority === 'high' ? 'bg-amber-900 text-amber-400 border border-amber-800/50' :
+                                                            'bg-surface-hover text-text-muted border border-border-default'
                             }`}>
-                              {t.priority}
+                              {task.priority}
                             </span>
                             {status === 'overdue' && (
-                              <span className="text-[10px] font-bold bg-rose-950 text-rose-400 border border-rose-800 px-2 py-0.5 rounded-md">
-                                Overdue
+                              <span className="text-[9px] font-bold bg-rose-900 text-rose-400 border border-rose-800 px-2 py-0.5 rounded">
+                                {t('overdue', lang)}
                               </span>
                             )}
                             {hasConflict && (
-                              <span className="text-[10px] font-bold bg-amber-950 text-amber-400 border border-amber-800 px-2 py-0.5 rounded-md flex items-center gap-1">
-                                <AlertTriangle className="w-3 h-3 text-amber-400" />
-                                Conflict with {conflicts.get(t.id)?.[0]}
+                              <span className="text-[9px] font-bold bg-amber-900 text-amber-400 border border-amber-800 px-2 py-0.5 rounded flex items-center gap-0.5">
+                                <AlertTriangle className="w-2 h-2 text-amber-400" />
+                                <span className="truncate text-[8px]">{t('conflictWith', lang)} {conflicts.get(task.id)?.[0]}</span>
                               </span>
                             )}
                           </div>
 
-                          <h4 className={`text-sm font-bold ${t.completed ? 'line-through text-slate-400' : 'text-slate-100'}`}>
-                            {t.title}
+                          <h4 className={`text-sm font-semibold ${task.completed ? 'line-through text-text-muted' : 'text-text-primary'}`}>
+                            {task.title}
                           </h4>
 
-                          {t.description && (
-                            <p className="text-xs text-slate-400 mt-1 line-clamp-2">
-                              {t.description}
-                            </p>
+                          {task.description && (
+                            <p className="text-[10px] text-text-muted mt-1 line-clamp-2">{task.description}</p>
                           )}
 
-                          <div className="flex items-center gap-3 text-xs text-slate-400 mt-2 font-mono">
-                            {t.startTime && t.endTime && (
-                              <span className="text-slate-300">
-                                {formatTime(t.startTime, timeFormat)} - {formatTime(t.endTime, timeFormat)}
-                              </span>
+                          <div className="flex items-center gap-2 text-[9px] text-text-muted mt-2 font-mono">
+                            {task.startTime && task.endTime && (
+                              <span className="text-text-secondary">{formatTime(task.startTime, timeFormat)} - {formatTime(task.endTime, timeFormat)}</span>
                             )}
-                            <span>Duration: {t.durationMinutes}m</span>
-                            {t.actualDurationMinutes ? (
-                              <span className="text-blue-400 font-bold">
-                                • Actual: {t.actualDurationMinutes}m
-                              </span>
+                            <span>{task.durationMinutes}m</span>
+                            {task.actualDurationMinutes ? (
+                              <span className="text-blue-400 font-bold">• Actual: {task.actualDurationMinutes}m</span>
                             ) : null}
                           </div>
                         </div>
                       </div>
 
                       {/* Right: Actions */}
-                      <div className="flex items-center gap-2 self-end sm:self-auto shrink-0">
+                      <div className="flex items-center gap-1 shrink-0">
                         <button
                           type="button"
-                          onClick={() => onStartTimer(t)}
-                          className="px-3 py-1.5 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-xs font-semibold shadow-sm transition active:scale-95 cursor-pointer flex items-center gap-1.5"
+                          onClick={() => onStartTimer(task)}
+                          className="px-2.5 py-1 rounded bg-blue-600 hover:bg-blue-500 text-white text-[9px] font-semibold shadow-sm transition active:scale-[0.97] cursor-pointer flex items-center gap-1"
                         >
-                          <Play className="w-3.5 h-3.5" />
-                          <span>Start Timer</span>
+                          <Play className="w-3 h-3" />
+                          <span>{t('startTimerShort', lang)}</span>
                         </button>
                         <button
                           type="button"
-                          onClick={() => setCopyModalTask(t)}
-                          className="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 transition cursor-pointer"
-                          title="Copy to another day"
+                          onClick={() => setCopyModalTask(task)}
+                          className="p-1.5 rounded-lg text-text-muted hover:text-text-primary hover:bg-surface-hover transition cursor-pointer"
+                          title={t('copyToDay', lang)}
                         >
-                          <Copy className="w-4 h-4" />
+                          <Copy className="w-3 h-3" />
                         </button>
                         <button
                           type="button"
-                          onClick={() => onOpenEdit(t)}
-                          className="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 transition cursor-pointer"
-                          title="Edit plan"
+                          onClick={() => onOpenEdit(task)}
+                          className="p-1.5 rounded-lg text-text-muted hover:text-text-primary hover:bg-surface-hover transition cursor-pointer"
+                          title={t('edit', lang)}
                         >
-                          <Edit className="w-4 h-4" />
+                          <Edit className="w-3 h-3" />
                         </button>
                         <button
                           type="button"
-                          onClick={() => setConfirmDeleteId(t.id)}
-                          className="p-2 rounded-xl bg-slate-800 hover:bg-rose-950/40 text-slate-400 hover:text-rose-400 border border-transparent hover:border-rose-900/40 transition cursor-pointer"
-                          title="Delete plan"
+                          onClick={() => setConfirmDeleteId(task.id)}
+                          className="p-1.5 rounded-lg text-text-muted hover:text-rose-400 hover:bg-rose-900/30 transition cursor-pointer"
+                          title={t('delete', lang)}
                         >
-                          <Trash2 className="w-4 h-4" />
+                          <Trash2 className="w-3 h-3" />
                         </button>
                       </div>
                     </div>
@@ -726,61 +704,55 @@ export const WeeklyPlannerView: React.FC<WeeklyPlannerViewProps> = ({
 
       {/* VIEW C: Simple List View */}
       {viewMode === 'list' && (
-        <div className="bg-slate-900/90 border border-slate-800 rounded-2xl p-5 space-y-4">
-          <div className="border-b border-slate-800 pb-3">
-            <h3 className="text-base font-bold text-slate-100">
-              Week Schedule Task List
-            </h3>
-            <p className="text-xs text-slate-400">
-              Complete linear view of all planned activities across the current week
-            </p>
+        <div className="rounded-xl border border-border-default bg-surface-panel p-5 space-y-4">
+          <div className="border-b border-border-default pb-3">
+            <h3 className="text-sm font-bold text-text-primary">{t('weekScheduleList', lang)}</h3>
+            <p className="text-[10px] text-text-muted">{t('linearViewWeek', lang)}</p>
           </div>
 
-          <div className="space-y-4">
+          <div className="space-y-3">
             {weekDays.map((day) => {
               const dayInfo = tasksByDay.get(day.dateStr);
               const dayTasks = dayInfo?.tasks || [];
               if (dayTasks.length === 0) return null;
 
               return (
-                <div key={day.dateStr} className="space-y-2">
-                  <div className="flex items-center justify-between text-xs font-bold text-slate-300 border-b border-slate-800/60 pb-1">
+                <div key={day.dateStr} className="space-y-1.5">
+                  <div className="flex items-center justify-between text-[10px] font-bold text-text-muted border-b border-border-default pb-1">
                     <span className="flex items-center gap-1.5">
                       <span>{day.dayName}, {day.monthName} {day.dayNumber}</span>
-                      {day.isToday && <span className="text-[10px] text-amber-400 font-bold">(Today)</span>}
+                      {day.isToday && <span className="text-[10px] text-amber-400 font-bold">({t('today', lang)})</span>}
                     </span>
-                    <span className="font-mono text-slate-400 text-[11px]">
-                      {formatHoursMinutes(dayInfo?.plannedMins || 0)}
-                    </span>
+                    <span className="font-mono text-text-secondary">{formatHoursMinutes(dayInfo?.plannedMins || 0)}</span>
                   </div>
 
-                  <div className="space-y-1.5">
-                    {dayTasks.map((t) => (
+                  <div className="space-y-1">
+                    {dayTasks.map((task) => (
                       <div
-                        key={t.id}
-                        className="p-2.5 rounded-xl bg-slate-950/70 border border-slate-800 flex items-center justify-between gap-3 text-xs"
+                        key={task.id}
+                        className="p-2 rounded-lg border border-border-default bg-surface-base flex items-center justify-between gap-2 text-[10px]"
                       >
-                        <div className="flex items-center gap-2.5 min-w-0 flex-1">
+                        <div className="flex items-center gap-1.5 min-w-0 flex-1">
                           <button
                             type="button"
-                            onClick={() => onToggleComplete(t.id)}
-                            className="text-slate-400 hover:text-emerald-400 transition cursor-pointer"
+                            onClick={() => onToggleComplete(task.id)}
+                            className="text-text-muted hover:text-emerald-400 transition cursor-pointer"
                           >
-                            {t.completed ? <CheckCircle2 className="w-4 h-4 text-emerald-400" /> : <Circle className="w-4 h-4" />}
+                            {task.completed ? <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" /> : <Circle className="w-3.5 h-3.5" />}
                           </button>
-                          <span className={`truncate font-medium ${t.completed ? 'line-through text-slate-500' : 'text-slate-200'}`}>
-                            {t.title}
+                          <span className={`truncate font-medium ${task.completed ? 'line-through text-text-muted' : 'text-text-primary'}`}>
+                            {task.title}
                           </span>
                         </div>
-                        <div className="flex items-center gap-3 font-mono text-[11px] text-slate-400 shrink-0">
-                          {t.startTime && <span>{formatTime(t.startTime, timeFormat)}</span>}
-                          <span>{t.durationMinutes}m</span>
+                        <div className="flex items-center gap-1 font-mono text-text-secondary shrink-0">
+                          {task.startTime && <span>{formatTime(task.startTime, timeFormat)}</span>}
+                          <span>{task.durationMinutes}m</span>
                           <button
                             type="button"
-                            onClick={() => onStartTimer(t)}
+                            onClick={() => onStartTimer(task)}
                             className="p-1 rounded bg-blue-600/20 text-blue-400 hover:bg-blue-600 hover:text-white transition cursor-pointer"
                           >
-                            <Play className="w-3 h-3" />
+                            <Play className="w-2.5 h-2.5" />
                           </button>
                         </div>
                       </div>
@@ -795,31 +767,27 @@ export const WeeklyPlannerView: React.FC<WeeklyPlannerViewProps> = ({
 
       {/* 5. MODAL: Copy Plan to Another Day */}
       {copyModalTask && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-150">
-          <div className="w-full max-w-sm rounded-2xl bg-slate-900 border border-slate-800 p-5 shadow-2xl relative space-y-4">
-            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animatefadein duration-200">
+          <div className="w-full max-w-sm rounded-2xl border border-border-default bg-surface-panel p-6 shadow-2xl relative animatezoomin duration-200">
+            <div className="flex items-center justify-between border-b border-border-default pb-3 mb-4">
               <div>
-                <h3 className="text-sm font-bold text-slate-100">
-                  Copy Plan to Another Day
-                </h3>
-                <p className="text-xs text-slate-400 truncate max-w-[220px]">
+                <h3 className="text-sm font-bold text-text-primary">{t('copyPlanToDay', lang)}</h3>
+                <p className="text-[10px] text-text-muted truncate max-w-[240px]">
                   "{copyModalTask.title}"
                 </p>
               </div>
               <button
                 type="button"
                 onClick={() => setCopyModalTask(null)}
-                className="p-1 text-slate-400 hover:text-slate-200"
+                className="btnicon btnghost size-8 text-text-muted hover:text-text-primary hover:bg-surface-hover"
               >
                 <X className="w-4 h-4" />
               </button>
             </div>
 
-            <div className="space-y-2">
-              <label className="text-xs font-semibold text-slate-300 block">
-                Select Destination Day:
-              </label>
-              <div className="grid grid-cols-2 gap-2 max-h-60 overflow-y-auto">
+            <div className="space-y-3">
+              <label className="fieldlabel">{t('selectDestinationDay', lang)}</label>
+              <div className="grid grid-cols-2 gap-2">
                 {weekDays.map((d) => (
                   <button
                     key={d.dateStr}
@@ -828,22 +796,22 @@ export const WeeklyPlannerView: React.FC<WeeklyPlannerViewProps> = ({
                       onDuplicateTask(copyModalTask, d.dateStr);
                       setCopyModalTask(null);
                     }}
-                    className="p-2.5 rounded-xl border border-slate-800 bg-slate-950 text-left hover:border-blue-500 hover:bg-blue-950/20 transition cursor-pointer"
+                    className="p-2.5 rounded-lg border border-border-default bg-surface-elevated text-left flex flex-col gap-0.5 transition cursor-pointer hover:border-border-focused hover:bg-surface-hover active:scale-[0.97]"
                   >
-                    <span className="text-xs font-bold block text-slate-200">{d.dayName}</span>
-                    <span className="text-[11px] text-slate-400 font-mono">{d.monthName} {d.dayNumber}</span>
+                    <span className="text-xs font-bold text-text-primary block">{d.dayName}</span>
+                    <span className="text-[9px] text-text-muted font-mono">{d.monthName} {d.dayNumber}</span>
                   </button>
                 ))}
               </div>
             </div>
 
-            <div className="pt-2 flex justify-end">
+            <div className="pt-3 flex justify-end">
               <button
                 type="button"
                 onClick={() => setCopyModalTask(null)}
-                className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-xs font-medium"
+                className="btnsecondary text-xs"
               >
-                Cancel
+                {t('cancel', lang)}
               </button>
             </div>
           </div>
@@ -852,21 +820,19 @@ export const WeeklyPlannerView: React.FC<WeeklyPlannerViewProps> = ({
 
       {/* 6. MODAL: Confirm Delete Task */}
       {confirmDeleteId && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-150">
-          <div className="w-full max-w-sm rounded-2xl bg-slate-900 border border-slate-800 p-5 shadow-2xl relative space-y-3">
-            <h3 className="text-sm font-bold text-slate-100">
-              Delete Scheduled Plan?
-            </h3>
-            <p className="text-xs text-slate-400">
-              Are you sure you want to remove this plan from your schedule? This action cannot be undone.
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animatefadein duration-200">
+          <div className="w-full max-w-sm rounded-2xl border border-border-default bg-surface-panel p-6 shadow-2xl relative animatezoomin duration-200">
+            <h3 className="text-sm font-bold text-text-primary">{t('deleteScheduledPlan', lang)}</h3>
+            <p className="text-[10px] text-text-muted mt-1 leading-relaxed">
+              {t('confirmDeleteDesc', lang)}
             </p>
-            <div className="flex items-center justify-end gap-2 pt-2">
+            <div className="flex items-center justify-end gap-2 pt-3">
               <button
                 type="button"
                 onClick={() => setConfirmDeleteId(null)}
-                className="px-3.5 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-xs font-medium cursor-pointer"
+                className="btnsecondary text-xs"
               >
-                Cancel
+                {t('cancel', lang)}
               </button>
               <button
                 type="button"
@@ -874,9 +840,9 @@ export const WeeklyPlannerView: React.FC<WeeklyPlannerViewProps> = ({
                   onDeleteTask(confirmDeleteId);
                   setConfirmDeleteId(null);
                 }}
-                className="px-4 py-1.5 bg-rose-600 hover:bg-rose-500 text-white rounded-xl text-xs font-semibold cursor-pointer"
+                className="btndanger text-xs font-bold"
               >
-                Delete
+                {t('delete', lang)}
               </button>
             </div>
           </div>

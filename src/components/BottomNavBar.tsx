@@ -34,9 +34,9 @@ export const BottomNavBar: React.FC<BottomNavBarProps> = ({
   return (
     <nav
       aria-label="Bottom Navigation"
-      className="fixed bottom-[calc(env(safe-area-inset-bottom,0px)+0.85rem)] inset-x-3 sm:inset-x-auto sm:left-1/2 sm:-translate-x-1/2 sm:w-full sm:max-w-md z-40 rounded-2xl bg-slate-900/95 border border-slate-800/90 backdrop-blur-lg shadow-2xl shadow-black/40"
+      className="fixed bottom-[calc(env(safe-area-inset-bottom,0px)+0.75rem)] inset-x-4 sm:inset-x-auto sm:left-1/2 sm:-translate-x-1/2 sm:w-full sm:max-w-md z-40 rounded-2xl bg-surface-panel/95 border border-border-default backdrop-blur-lg shadow-2xl shadow-black/40"
     >
-      <div className="px-2 sm:px-4 h-16 flex items-center justify-between sm:justify-around gap-1 overflow-x-auto scrollbar-none">
+      <div className="px-3 sm:px-5 h-16 flex items-center justify-between sm:justify-around gap-1">
         {navItems.map((item) => {
           const Icon = item.icon;
           const isActive = activeSection === item.id;
@@ -45,21 +45,21 @@ export const BottomNavBar: React.FC<BottomNavBarProps> = ({
             <button
               key={item.id}
               onClick={() => handleSelect(item.id)}
-              className={`shrink-0 min-w-[72px] sm:flex-1 flex flex-col items-center justify-center py-1.5 px-3 rounded-xl transition cursor-pointer select-none relative ${
+              className={`shrink-0 min-w-[72px] sm:flex-1 flex flex-col items-center justify-center py-2 px-2 rounded-xl transition-all duration-200 cursor-pointer select-none relative ${
                 isActive
-                  ? 'text-blue-400 font-semibold'
-                  : 'text-slate-400 hover:text-slate-200'
+                  ? 'text-blue-400 bg-blue-600/20 shadow-sm shadow-blue-500/20'
+                  : 'text-text-muted hover:bg-surface-hover hover:text-text-primary'
               }`}
             >
               <div className="relative">
-                <Icon className={`w-5 h-5 transition-transform ${isActive ? 'scale-110 text-blue-400' : ''}`} />
+                <Icon className={`w-5 h-5 transition-transform duration-200 ${isActive ? 'scale-110 text-blue-400' : 'text-text-muted'}`} />
                 {item.id === 'plans' && typeof plansCount === 'number' && plansCount > 0 && (
-                  <span className="absolute -top-1 -right-2.5 px-1.5 py-0.2 bg-blue-600 text-white text-[9px] font-mono font-bold rounded-full">
+                  <span className="absolute -top-1 -right-1 px-1.5 py-0.5 bg-blue-600 text-white text-[9px] font-mono font-bold rounded-full border border-white">
                     {plansCount}
                   </span>
                 )}
               </div>
-              <span className="text-[11px] mt-1 tracking-tight whitespace-nowrap">
+              <span className="text-[10px] mt-1 tracking-tight whitespace-nowrap font-medium">
                 {t(item.labelKey, lang)}
               </span>
               {isActive && (

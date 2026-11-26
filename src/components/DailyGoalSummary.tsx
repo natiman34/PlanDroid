@@ -45,7 +45,6 @@ export const DailyGoalSummary: React.FC<DailyGoalSummaryProps> = ({
   const completedTasks = safeTasks.filter(t => Boolean(t && t.completed)).length;
 
   // Strict dynamic progress calculation: (completed / total) * 100
-  // Safe from NaN, Infinity, negative values, and capped at 100%
   const rawPercent = totalTasks > 0 ? (completedTasks / totalTasks) * 100 : 0;
   const safePercent = Number.isFinite(rawPercent)
     ? Math.min(100, Math.max(0, Math.round(rawPercent)))
@@ -80,7 +79,6 @@ export const DailyGoalSummary: React.FC<DailyGoalSummaryProps> = ({
   const isGoalCustomized = Number.isFinite(dailyGoalMinutes) && (dailyGoalMinutes ?? 0) > 0;
   const effectiveGoalMinutes = isGoalCustomized ? (dailyGoalMinutes as number) : 240;
   const formattedGoalTime = formatHoursMinutes(effectiveGoalMinutes);
-
 
   // Remaining focus time until goal
   const remainingFocusMinutes = Math.max(0, effectiveGoalMinutes - totalFocusedMinutes);
@@ -125,84 +123,71 @@ export const DailyGoalSummary: React.FC<DailyGoalSummaryProps> = ({
   };
 
   return (
-    <section 
+    <section
       aria-label="Daily Goal Summary"
-      className="w-full rounded-2xl bg-gradient-to-br from-slate-900 via-slate-900/95 to-blue-950/40 border border-slate-800 p-4 shadow-sm relative overflow-hidden space-y-3.5 transition-all"
+      className="w-full rounded-xl border border-border-default bg-surface-panel p-4 shadow-sm transition-all duration-200"
     >
       {/* Background ambient decorative glow */}
-      <div className="absolute -top-12 -right-12 w-36 h-36 bg-blue-600/10 rounded-full blur-2xl pointer-events-none" />
-      <div className="absolute -bottom-12 -left-12 w-36 h-36 bg-indigo-600/10 rounded-full blur-2xl pointer-events-none" />
+      <div className="absolute -top-10 -right-10 w-32 h-32 bg-blue-600/10 rounded-full blur-2xl pointer-events-none" />
+      <div className="absolute -bottom-10 -left-10 w-32 h-32 bg-indigo-600/10 rounded-full blur-2xl pointer-events-none" />
 
       {/* Top Banner: Goal Target & Motivational Prompt */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 pb-2.5 border-b border-slate-800/80">
+      <div className="relative flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-border-default">
         <div className="flex items-center gap-2.5 min-w-0">
-          <div className="w-8 h-8 rounded-xl bg-blue-600/20 text-blue-400 border border-blue-500/30 flex items-center justify-center shrink-0">
-            <Target className="w-4 h-4 text-blue-400" />
+          <div className="w-9 h-9 rounded-lg bg-blue-600/20 text-blue-400 border border-blue-500/30 flex items-center justify-center shrink-0">
+            <Target className="w-4.5 h-4.5 text-blue-400" />
           </div>
           <div className="min-w-0 flex-1">
-            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">
+            <span className="text-[10px] font-bold text-text-muted uppercase tracking-wider block">
               {t('dailyGoalMomentum', lang)}
             </span>
-            <p className="text-xs sm:text-sm font-semibold text-slate-100 leading-snug truncate">
+            <p className="text-xs sm:text-sm font-semibold text-text-primary leading-snug truncate">
               {localizedMotivation}
             </p>
           </div>
         </div>
 
         {/* Milestone or Score badge */}
-        <div className="self-start sm:self-auto shrink-0">
-          {safePercent === 100 && totalTasks > 0 ? (
-            <button
-              onClick={handleCelebrate}
-              className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 text-xs font-bold animate-bounce cursor-pointer shadow-sm"
-              title="Celebrate goal completion!"
-            >
-              <Trophy className="w-3.5 h-3.5 text-amber-400" />
-              <span>{t('goalCleared', lang)}</span>
-            </button>
-          ) : (
-            <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-800/90 text-blue-400 border border-slate-700/60 text-xs font-semibold">
-              <Flame className="w-3.5 h-3.5 text-amber-400" />
-              <span>{t('focusScore', lang)}: {stats.focusScore}</span>
-            </div>
-          )}
+        <div className="self-start sm:self-auto shrink-0 flex items-center gap-2 px-3 py-1.5 rounded-lg bg-surface-elevated text-blue-400 border border-border-default text-xs font-semibold shadow-sm">
+          <Flame className="w-3.5 h-3.5 text-amber-400" />
+          <span>{t('focusScore', lang)}: {stats.focusScore}</span>
         </div>
       </div>
 
-      {/* Visual Dynamic Progress Bar representing task completion */}
-      <div className="bg-slate-950/70 border border-slate-800/90 rounded-xl p-3.5 shadow-inner">
-        <div className="flex items-center justify-between text-xs mb-1.5">
-          <div className="flex items-center gap-1.5 font-semibold text-slate-200">
+      {/* Task Completion Progress Card */}
+      <div className="mt-4 rounded-lg border border-border-default bg-surface-elevated/50 p-3.5 shadow-inner">
+        <div className="flex items-center justify-between text-xs mb-2">
+          <div className="flex items-center gap-2 font-semibold text-text-primary">
             <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
             <span>{t('dailyTaskCompletion', lang)}</span>
           </div>
           <div className="flex items-center gap-2">
-            <span className="text-xs text-slate-400">
+            <span className="text-text-muted">
               <strong className="text-emerald-400 font-mono">{completedTasks}</strong> {t('of', lang)}{' '}
-              <strong className="text-slate-200 font-mono">{totalTasks}</strong> {t('tasks', lang)}
+              <strong className="text-text-primary font-mono">{totalTasks}</strong> {t('tasks', lang)}
             </span>
-            <span className="font-mono text-xs font-extrabold text-emerald-400 bg-emerald-950/80 px-2 py-0.5 rounded border border-emerald-800/80">
+            <span className="font-mono text-xs font-bold text-emerald-400 bg-emerald-900/30 px-2 py-0.5 rounded border border-emerald-500/30">
               {safePercent}%
             </span>
           </div>
         </div>
 
-        {/* Visual Progress Bar that fills dynamically */}
-        <div className="relative w-full bg-slate-800/90 rounded-full h-3 overflow-hidden p-0.5 border border-slate-700/60">
+        {/* Progress Bar */}
+        <div className="relative w-full bg-surface-hover rounded-full h-2.5 overflow-hidden p-0.5 border border-border-default">
           <div
             className="h-full rounded-full bg-gradient-to-r from-emerald-500 via-teal-400 to-blue-500 transition-all duration-500 ease-out relative"
             style={{ width: `${safePercent}%` }}
           >
             {safePercent > 5 && (
               <span className="absolute inset-y-0 right-1 flex items-center">
-                <span className="w-1.5 h-1.5 rounded-full bg-white shadow animate-pulse" />
+                <span className="w-1.5 h-1.5 rounded-full bg-white shadow animateandroidpulse" />
               </span>
             )}
           </div>
         </div>
 
         {/* Milestone Marks */}
-        <div className="flex items-center justify-between text-[9px] text-slate-500 font-mono mt-1 px-0.5">
+        <div className="flex items-center justify-between text-[9px] text-text-muted font-mono mt-1.5 px-0.5">
           <span>0%</span>
           <span>25%</span>
           <span>50%</span>
@@ -212,11 +197,11 @@ export const DailyGoalSummary: React.FC<DailyGoalSummaryProps> = ({
       </div>
 
       {/* Metric Details Grid: Circular Task Breakdown + Total Focused Time */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 items-stretch">
+      <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-3 items-stretch">
         {/* Metric Card 1: Task Completion Breakdown */}
-        <div className="flex items-center gap-3.5 bg-slate-950/60 border border-slate-800/80 rounded-xl p-3">
-          <div className="relative w-14 h-14 flex items-center justify-center shrink-0">
-            <svg className="w-14 h-14 transform -rotate-90" viewBox="0 0 64 64">
+        <div className="flex items-center gap-3 rounded-lg border border-border-default bg-surface-elevated/80 p-3">
+          <div className="relative w-12 h-12 flex items-center justify-center shrink-0">
+            <svg className="w-12 h-12 transform -rotate-90" viewBox="0 0 64 64">
               <circle
                 cx="32"
                 cy="32"
@@ -224,7 +209,7 @@ export const DailyGoalSummary: React.FC<DailyGoalSummaryProps> = ({
                 stroke="currentColor"
                 strokeWidth="5"
                 fill="transparent"
-                className="text-slate-800"
+                className="text-surface-hover"
               />
               <circle
                 cx="32"
@@ -240,35 +225,35 @@ export const DailyGoalSummary: React.FC<DailyGoalSummaryProps> = ({
               />
             </svg>
             <div className="absolute flex flex-col items-center justify-center text-center">
-              <span className="text-xs font-extrabold font-mono text-slate-100 leading-tight">
+              <span className="text-[10px] font-extrabold font-mono text-text-primary leading-tight">
                 {safePercent}%
               </span>
             </div>
           </div>
 
           <div className="flex-1 min-w-0">
-            <div className="text-xs font-semibold text-slate-200">
+            <div className="text-xs font-semibold text-text-primary">
               {t('taskCompletionStatus', lang)}
             </div>
-            <div className="text-[11px] text-slate-400 mt-0.5">
+            <div className="text-[11px] text-text-muted mt-0.5">
               <span className="font-semibold text-emerald-400">{completedTasks}</span> {t('of', lang)}{' '}
-              <span className="font-semibold text-slate-300">{totalTasks}</span> {t('completed', lang)}
+              <span className="font-semibold text-text-secondary">{totalTasks}</span> {t('completed', lang)}
             </div>
-            <div className="text-[10px] text-slate-500 mt-0.5 flex items-center gap-1">
+            <div className="text-[10px] text-text-muted mt-0.5 flex items-center gap-1">
               <span>{Math.max(0, totalTasks - completedTasks)} {t('pendingToday', lang)}</span>
             </div>
           </div>
         </div>
 
-        {/* Metric Card 2: Total Focused Time formatted as hours and minutes */}
-        <div className="bg-slate-950/60 border border-slate-800/80 rounded-xl p-3 flex flex-col justify-between">
+        {/* Metric Card 2: Total Focused Time */}
+        <div className="rounded-lg border border-border-default bg-surface-elevated/80 p-3 flex flex-col justify-between">
           <div>
-            <div className="flex items-center justify-between text-xs mb-1.5">
-              <span className="font-semibold text-slate-200 flex items-center gap-1.5">
+            <div className="flex items-center justify-between text-xs mb-2">
+              <span className="font-semibold text-text-primary flex items-center gap-1.5">
                 <Clock className="w-3.5 h-3.5 text-blue-400" />
                 {t('totalFocusedTime', lang)}
               </span>
-              
+
               <div className="flex items-center gap-2">
                 <button
                   type="button"
@@ -276,7 +261,7 @@ export const DailyGoalSummary: React.FC<DailyGoalSummaryProps> = ({
                     setCustomGoalInput(Math.round(effectiveGoalMinutes / 60).toString());
                     setIsGoalModalOpen(true);
                   }}
-                  className="px-2 py-0.5 rounded-md bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 border border-blue-500/30 text-[10px] font-semibold transition cursor-pointer flex items-center gap-1 active:scale-95"
+                  className="px-2.5 py-1 rounded-md bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 border border-blue-500/30 text-[10px] font-semibold transition cursor-pointer flex items-center gap-1 active:scale-[0.97]"
                   title="Configure daily focus time target"
                 >
                   <Target className="w-2.5 h-2.5" />
@@ -285,13 +270,13 @@ export const DailyGoalSummary: React.FC<DailyGoalSummaryProps> = ({
 
                 <span className="font-mono text-xs font-bold text-blue-400">
                   {formattedFocusedTime}{' '}
-                  <span className="text-slate-500 font-normal">/ {formattedGoalTime}{!isGoalCustomized ? ' (default)' : ''}</span>
+                  <span className="text-text-muted font-normal">/ {formattedGoalTime}{!isGoalCustomized ? ' (default)' : ''}</span>
                 </span>
               </div>
             </div>
 
             {/* Focus Time Progress Bar */}
-            <div className="w-full bg-slate-800 rounded-full h-2 overflow-hidden mb-1.5">
+            <div className="w-full bg-surface-hover rounded-full h-2 overflow-hidden mb-2 border border-border-default">
               <div
                 className={`h-2 rounded-full transition-all duration-500 ease-out ${
                   isGoalReached
@@ -301,56 +286,52 @@ export const DailyGoalSummary: React.FC<DailyGoalSummaryProps> = ({
                 style={{ width: `${focusTimePercent}%` }}
               />
             </div>
+
+            <div className="flex items-center justify-between text-[10px] text-text-muted font-mono">
+              <span>{formattedFocusedTime}</span>
+              <span>{formattedRemainingTime} {t('remaining', lang)}</span>
+            </div>
           </div>
 
-          <div className="flex items-center justify-between text-[11px] pt-1.5 border-t border-slate-800/60 text-slate-400">
-            <span className="flex items-center gap-1">
-              <Zap className="w-3 h-3 text-amber-400" />
-              <span>
-                {isGoalReached ? (
-                  <strong className="text-emerald-400 font-semibold">{t('goalReached', lang)}</strong>
-                ) : (
-                  <>
-                    {t('left', lang)}: <strong className="text-slate-200 font-mono">{formattedRemainingTime}</strong>
-                  </>
-                )}
-              </span>
-            </span>
-
-            {onOpenActiveFocus && stats.remaining > 0 ? (
-              <button
-                onClick={onOpenActiveFocus}
-                className="text-[11px] font-semibold text-blue-400 hover:text-blue-300 flex items-center gap-1 transition cursor-pointer"
-                title="Launch focus timer for current active task"
-              >
-                <span>{t('focus', lang)}</span>
-                <ArrowRight className="w-3 h-3" />
-              </button>
-            ) : (
-              <span className="text-emerald-400 font-medium flex items-center gap-1 text-[10px]">
-                <Sparkles className="w-3 h-3" />
-                {totalTasks === 0 ? t('noActiveTasks', lang) : t('goalCleared', lang)}
-              </span>
-            )}
-          </div>
+          {/* Goal reached indicator */}
+          {isGoalReached && totalTasks > 0 && (
+            <button
+              onClick={handleCelebrate}
+              className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 text-[10px] font-bold animate-bounce cursor-pointer shadow-sm transition"
+              title="Celebrate goal completion!"
+            >
+              <Trophy className="w-3 h-3 text-amber-400" />
+              <span>{t('goalCleared', lang)}</span>
+            </button>
+          )}
+          {!isGoalReached && totalTasks > 0 && (
+            <button
+              onClick={() => onOpenActiveFocus && onOpenActiveFocus()}
+              className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-blue-600/20 text-blue-300 border border-blue-500/40 text-[10px] font-bold transition cursor-pointer hover:bg-blue-600/30"
+              title="Launch focus timer for current active task"
+            >
+              <span>{t('focus', lang)}</span>
+              <ArrowRight className="w-3 h-3" />
+            </button>
+          )}
         </div>
       </div>
 
       {/* Interactive Set Daily Goal Modal */}
       {isGoalModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-150">
-          <div className="w-full max-w-sm rounded-2xl bg-slate-900 border border-slate-800 p-5 shadow-2xl relative space-y-4">
-            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-black/60 backdrop-blur-sm animatefadein duration-200">
+          <div className="w-full max-w-sm rounded-2xl border border-border-default bg-surface-panel p-6 shadow-xl relative animatezoomin duration-200">
+            <div className="flex items-center justify-between border-b border-border-default pb-3 mb-4">
               <div className="flex items-center gap-2">
                 <Target className="w-5 h-5 text-blue-400" />
                 <div>
-                  <h3 className="text-sm font-bold text-slate-100">{t('dailyGoalLabel', lang)}</h3>
-                  <p className="text-[11px] text-slate-400">{t('dailyGoalDesc', lang)}</p>
+                  <h3 className="text-sm font-bold text-text-primary">{t('dailyGoalLabel', lang)}</h3>
+                  <p className="text-[11px] text-text-muted">{t('dailyGoalDesc', lang)}</p>
                 </div>
               </div>
               <button
                 onClick={() => setIsGoalModalOpen(false)}
-                className="p-1 rounded-lg text-slate-400 hover:text-slate-200 hover:bg-slate-800 transition"
+                className="p-1.5 rounded-lg text-text-muted hover:text-text-primary hover:bg-surface-hover transition"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -358,7 +339,7 @@ export const DailyGoalSummary: React.FC<DailyGoalSummaryProps> = ({
 
             {/* Quick Preset Hours */}
             <div>
-              <label className="text-[11px] font-semibold text-slate-400 block mb-2">
+              <label className="text-[10px] font-semibold text-text-muted block mb-3">
                 Quick Presets:
               </label>
               <div className="grid grid-cols-3 gap-2">
@@ -377,15 +358,15 @@ export const DailyGoalSummary: React.FC<DailyGoalSummaryProps> = ({
                       if (onUpdateDailyGoal) onUpdateDailyGoal(opt.mins);
                       setIsGoalModalOpen(false);
                     }}
-                    className={`p-2 rounded-xl text-xs font-medium border text-center transition cursor-pointer relative ${
+                    className={`p-2.5 rounded-lg text-xs font-medium border transition cursor-pointer relative ${
                       effectiveGoalMinutes === opt.mins
-                        ? 'bg-blue-600 text-white border-blue-500 shadow-sm font-bold'
-                        : 'bg-slate-950 text-slate-300 border-slate-800 hover:border-slate-700'
+                        ? 'bg-blue-600 text-white border-blue-500 shadow-sm font-bold shadow-blue-500/20'
+                        : 'bg-surface-base text-text-secondary border-border-default hover:border-border-focused'
                     }`}
                   >
                     <span>{opt.hours} {t('goalHours', lang)}</span>
                     {opt.rec && (
-                       <span className="block text-[9px] text-blue-200/80 font-normal">
+                      <span className="block text-[9px] text-blue-200/80 font-normal">
                         (Default)
                       </span>
                     )}
@@ -395,8 +376,8 @@ export const DailyGoalSummary: React.FC<DailyGoalSummaryProps> = ({
             </div>
 
             {/* Custom Input */}
-            <div className="pt-2 border-t border-slate-800">
-              <label className="text-[11px] font-semibold text-slate-400 block mb-1">
+            <div className="mt-4 border-t border-border-default pt-4">
+              <label className="text-[10px] font-semibold text-text-muted block mb-2">
                 Custom Focus Target (hours):
               </label>
               <div className="flex items-center gap-2">
@@ -407,7 +388,7 @@ export const DailyGoalSummary: React.FC<DailyGoalSummaryProps> = ({
                   step="0.5"
                   value={customGoalInput}
                   onChange={(e) => setCustomGoalInput(e.target.value)}
-                  className="flex-1 bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs font-mono text-slate-200 focus:outline-none focus:border-blue-500"
+                  className="flex-1 rounded-lg border border-border-default bg-surface-base px-3 py-2 text-xs font-mono text-text-primary focus:border-border-focused focus:ring-1 focus:ring-border-focused focus:outline-none placeholder-text-muted"
                   placeholder="e.g. 4"
                 />
                 <button
@@ -420,7 +401,7 @@ export const DailyGoalSummary: React.FC<DailyGoalSummaryProps> = ({
                       setIsGoalModalOpen(false);
                     }
                   }}
-                  className="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-xs font-semibold shadow-sm transition active:scale-95 cursor-pointer flex items-center gap-1"
+                  className="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-lg text-xs font-semibold shadow-lg shadow-blue-600/20 transition active:scale-[0.97] cursor-pointer flex items-center gap-1"
                 >
                   <Check className="w-3.5 h-3.5" />
                   <span>{t('saveGoal', lang)}</span>
